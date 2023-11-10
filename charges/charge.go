@@ -1,7 +1,7 @@
 package charges
 
 type ChargeData struct {
-	Charges []Charge `json:"data"`
+	Charges Charge `json:"data"`
 }
 
 type Charge struct {
@@ -22,9 +22,7 @@ type Charge struct {
 	FailureCode       *string `json:"failure_code"`
 	FailureMessage    *string `json:"failure_message"`
 	ChargeDescription *string `json:"charge_description"`
-	UnderRevies       int     `json:"under_review"`
-	// INVOICE?
-	// Refunds       refunds.Refund `json:"refund"`
+	UnderReview       bool    `json:"under_review"`
 }
 
 type ChargeInput struct {

@@ -6,8 +6,6 @@ import (
 
 type ChargeService struct {
 	client *client.Client
-
-	//tokenservice
 }
 
 func NewChargeService(apiKey string) (*ChargeService, error) {

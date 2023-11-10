@@ -38,7 +38,7 @@ func (s *CustomerService) Create(input CustomerInput) (*Customer, error) {
 func (s *CustomerService) CreateCard(id string, input TokenInput) (*Customer, error) {
 	token, err := s.createToken(input)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
 	data := utils.GenerateFormPayload(token)

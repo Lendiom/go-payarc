@@ -26,10 +26,11 @@ func (s *ChargeService) Create(input ChargeInput) (*Charge, error) {
 	}
 
 	defer res.Body.Close()
+
 	var chargeData ChargeData
 	if err := json.NewDecoder(res.Body).Decode(&chargeData); err != nil {
 		return nil, err
 	}
 
-	return &chargeData.Charges[0], nil
+	return &chargeData.Charges, nil
 }
