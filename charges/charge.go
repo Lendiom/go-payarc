@@ -1,31 +1,28 @@
 package charges
 
-import "go-payarc/customers/cards"
-
 type ChargeData struct {
 	Charges []Charge `json:"data"`
 }
 
 type Charge struct {
-	Object            string         `json:"object"`
-	ChargeId          string         `json:"charge_id"`
-	RealId            int            `json:"real_id"`
-	Amount            int            `json:"amount"`
-	AmountRefunded    int            `json:"amount_refunded"`
-	AmountCaptured    int            `json:"amount_captured"`
-	AmountVoided      int            `json:"amount_voided"`
-	PayArcFees        int            `json:"payarc_fees"`
-	Type              string         `json:"type"`
-	NetAmount         int            `json:"net_amount"`
-	Captured          int            `json:"captured"`
-	IsRefunded        int            `json:"is_refunded"`
-	Status            string         `json:"status"`
-	AuthCode          string         `json:"auth_code"`
-	FailureCode       *string        `json:"failure_code"`
-	FailureMessage    *string        `json:"failure_message"`
-	ChargeDescription *string        `json:"charge_description"`
-	UnderRevies       int            `json:"under_review"`
-	Cards             cards.CardData `json:"card"`
+	Object            string  `json:"object"`
+	Id                string  `json:"id"`
+	RealId            int     `json:"real_id"`
+	Amount            int     `json:"amount"`
+	AmountRefunded    int     `json:"amount_refunded"`
+	AmountCaptured    int     `json:"amount_captured"`
+	AmountVoided      int     `json:"amount_voided"`
+	PayArcFees        int     `json:"payarc_fees"`
+	Type              string  `json:"type"`
+	NetAmount         int     `json:"net_amount"`
+	Captured          int     `json:"captured"`
+	IsRefunded        int     `json:"is_refunded"`
+	Status            string  `json:"status"`
+	AuthCode          string  `json:"auth_code"`
+	FailureCode       *string `json:"failure_code"`
+	FailureMessage    *string `json:"failure_message"`
+	ChargeDescription *string `json:"charge_description"`
+	UnderRevies       int     `json:"under_review"`
 	// INVOICE?
 	// Refunds       refunds.Refund `json:"refund"`
 }

@@ -1,4 +1,4 @@
-package cards
+package customers
 
 type TokenData struct {
 	Token Token `json:"data"`
