@@ -1,6 +1,6 @@
 package charges
 
-import "go-payarc/cards"
+import "go-payarc/customers/cards"
 
 type ChargeData struct {
 	Charges []Charge `json:"data"`

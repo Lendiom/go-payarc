@@ -1,7 +1,7 @@
 package cards
 
 type CardData struct {
-	Cards []Card `json:"data"`
+	Cards Card `json:"data"`
 }
 
 type Card struct {

@@ -1,8 +1,8 @@
 package customers
 
 import (
-	"go-payarc/cards"
 	"go-payarc/charges"
+	"go-payarc/customers/cards"
 )
 
 type CustomerLookup struct {
