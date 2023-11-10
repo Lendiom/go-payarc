@@ -1,11 +1,11 @@
-package tokens
+package customers
 
 type TokenData struct {
-	Token []Token `json:"data"`
+	Token Token `json:"data"`
 }
 
 type Token struct {
-	TokenId string `json:"token_id" form:"token_id,omitempty"`
+	Id string `json:"id" form:"token_id,omitempty"`
 }
 
 type TokenInput struct {
