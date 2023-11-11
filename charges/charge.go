@@ -1,10 +1,14 @@
 package charges
 
-type ChargeData struct {
-	Charges Charge `json:"data"`
+type Charges struct {
+	Charges []ChargeData `json:"data"`
 }
 
 type Charge struct {
+	Charge ChargeData `json:"data"`
+}
+
+type ChargeData struct {
 	Object            string  `json:"object"`
 	Id                string  `json:"id"`
 	RealId            int     `json:"real_id"`
@@ -22,7 +26,6 @@ type Charge struct {
 	FailureCode       *string `json:"failure_code"`
 	FailureMessage    *string `json:"failure_message"`
 	ChargeDescription *string `json:"charge_description"`
-	UnderReview       bool    `json:"under_review"`
 }
 
 type ChargeInput struct {

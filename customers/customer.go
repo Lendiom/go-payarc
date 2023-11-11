@@ -2,15 +2,15 @@ package customers
 
 import "go-payarc/charges"
 
-type CustomerLookup struct {
-	Customers []Customer `json:"data"`
-}
-
-type SingleCustomerLookup struct {
-	Customer Customer `json:"data"`
+type Customers struct {
+	Customers []CustomerData `json:"data"`
 }
 
 type Customer struct {
+	Customer CustomerData `json:"data"`
+}
+
+type CustomerData struct {
 	Object           string             `json:"object"`
 	Id               string             `json:"customer_id"`
 	Name             *string            `json:"name"`

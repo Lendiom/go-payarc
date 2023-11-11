@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (s *ChargeService) Create(input ChargeInput) (*Charge, error) {
+func (s *ChargeService) Create(input ChargeInput) (*ChargeData, error) {
 	data := utils.GenerateFormPayload(input)
 
 	req, err := http.NewRequest("POST", s.client.Url.String(), strings.NewReader(data.Encode()))
@@ -27,10 +27,10 @@ func (s *ChargeService) Create(input ChargeInput) (*Charge, error) {
 
 	defer res.Body.Close()
 
-	var chargeData ChargeData
-	if err := json.NewDecoder(res.Body).Decode(&chargeData); err != nil {
+	var charge Charge
+	if err := json.NewDecoder(res.Body).Decode(&charge); err != nil {
 		return nil, err
 	}
 
-	return &chargeData.Charges, nil
+	return &charge.Charge, nil
 }

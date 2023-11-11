@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (s *CustomerService) Create(input CustomerInput) (*Customer, error) {
+func (s *CustomerService) Create(input CustomerInput) (*CustomerData, error) {
 	data := utils.GenerateFormPayload(input)
 
 	req, err := http.NewRequest("POST", s.client.Url.String(), strings.NewReader(data.Encode()))
@@ -27,15 +27,15 @@ func (s *CustomerService) Create(input CustomerInput) (*Customer, error) {
 	}
 
 	defer res.Body.Close()
-	var customerData SingleCustomerLookup
-	if err := json.NewDecoder(res.Body).Decode(&customerData); err != nil {
+	var customer Customer
+	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
 	}
 
-	return &customerData.Customer, err
+	return &customer.Customer, err
 }
 
-func (s *CustomerService) CreateCard(id string, input TokenInput) (*Customer, error) {
+func (s *CustomerService) CreateCard(id string, input TokenInput) (*CustomerData, error) {
 	token, err := s.createToken(input)
 	if err != nil {
 		return nil, err
@@ -60,12 +60,12 @@ func (s *CustomerService) CreateCard(id string, input TokenInput) (*Customer, er
 	}
 
 	defer res.Body.Close()
-	var customerData SingleCustomerLookup
-	if err := json.NewDecoder(res.Body).Decode(&customerData); err != nil {
+	var customer Customer
+	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
 	}
 
-	return &customerData.Customer, nil
+	return &customer.Customer, nil
 }
 
 func (s *CustomerService) createToken(input TokenInput) (*Token, error) {

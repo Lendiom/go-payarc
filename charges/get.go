@@ -1,4 +1,4 @@
-package customers
+package charges
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (s *CustomerService) GetAll() ([]CustomerData, error) {
+func (s *ChargeService) GetAll() ([]ChargeData, error) {
 	req, err := http.NewRequest("GET", s.client.Url.String(), nil)
 	if err != nil {
 		return nil, err
@@ -21,16 +21,15 @@ func (s *CustomerService) GetAll() ([]CustomerData, error) {
 	}
 
 	defer res.Body.Close()
-	var customers Customers
-	if err := json.NewDecoder(res.Body).Decode(&customers); err != nil {
-		println("here")
+	var charges Charges
+	if err := json.NewDecoder(res.Body).Decode(&charges); err != nil {
 		return nil, err
 	}
 
-	return customers.Customers, nil
+	return charges.Charges, nil
 }
 
-func (s *CustomerService) GetById(id string) (*CustomerData, error) {
+func (s *ChargeService) GetById(id string) (*ChargeData, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
 	if err != nil {
 		return nil, err
@@ -45,11 +44,11 @@ func (s *CustomerService) GetById(id string) (*CustomerData, error) {
 	}
 
 	defer res.Body.Close()
-	var customer Customer
-	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
+	var charge Charge
+	if err := json.NewDecoder(res.Body).Decode(&charge); err != nil {
 		println("here")
 		return nil, err
 	}
 
-	return &customer.Customer, nil
+	return &charge.Charge, nil
 }
