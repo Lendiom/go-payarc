@@ -36,11 +36,12 @@ type CardData struct {
 }
 
 type Card struct {
-	Object   string `json:"object"`
-	Id       string `json:"id"`
-	Last4    string `json:"last4digit"`
-	ExpMonth string `json:"exp_month"`
-	ExpYear  string `json:"exp_year"`
+	Object    string `json:"object"`
+	Id        string `json:"id"`
+	Last4     string `json:"last4digit"`
+	ExpMonth  string `json:"exp_month"`
+	ExpYear   string `json:"exp_year"`
+	IsDefault int    `json:"is_default"`
 }
 
 type CustomerInput struct {
