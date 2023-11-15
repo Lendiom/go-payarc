@@ -44,8 +44,8 @@ type Card struct {
 }
 
 type CustomerInput struct {
-	Name             string  `form:"name,omitempty"`
-	Email            string  `form:"email,omitempty"`
+	Name             *string `form:"name,omitempty"`
+	Email            *string `form:"email,omitempty"`
 	Description      *string `form:"description,omitempty"`
 	SendEmailAddress *string `form:"send_email_address,omitempty"`
 	CcEmailAddress   *string `form:"cc_email_address,omitempty"`
