@@ -1,18 +1,13 @@
 package utils
 
 import (
-	"log"
 	"net/url"
 
 	"github.com/go-playground/form"
 )
 
-func GenerateFormPayload(s interface{}) url.Values {
+func GenerateFormPayload(s interface{}) (url.Values, error) {
 	encoder := form.NewEncoder()
-	values, err := encoder.Encode(&s)
-	if err != nil {
-		log.Panic(err)
-	}
 
-	return values
+	return encoder.Encode(&s)
 }

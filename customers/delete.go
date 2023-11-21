@@ -21,7 +21,6 @@ func (s *CustomerService) Delete(id string) error {
 	if err != nil {
 		return err
 	}
-
 	defer res.Body.Close()
 
 	return nil
@@ -42,7 +41,6 @@ func (s *CustomerService) DeleteCard(customerId, cardId string) error {
 	if err != nil {
 		return err
 	}
-
 	defer res.Body.Close()
 
 	return nil

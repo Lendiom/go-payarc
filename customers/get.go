@@ -19,18 +19,17 @@ func (s *CustomerService) GetAll() ([]CustomerData, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer res.Body.Close()
+
 	var customers Customers
 	if err := json.NewDecoder(res.Body).Decode(&customers); err != nil {
-		println("here")
 		return nil, err
 	}
 
 	return customers.Customers, nil
 }
 
-func (s *CustomerService) GetById(id string) (*CustomerData, error) {
+func (s *CustomerService) GetByID(id string) (*CustomerData, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
 	if err != nil {
 		return nil, err
@@ -43,11 +42,10 @@ func (s *CustomerService) GetById(id string) (*CustomerData, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer res.Body.Close()
+
 	var customer Customer
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
-		println("here")
 		return nil, err
 	}
 

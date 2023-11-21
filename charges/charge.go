@@ -10,8 +10,8 @@ type Charge struct {
 
 type ChargeData struct {
 	Object            string  `json:"object"`
-	Id                string  `json:"id"`
-	RealId            int     `json:"real_id"`
+	ID                string  `json:"id"`
+	RealID            int     `json:"real_id"`
 	Amount            int     `json:"amount"`
 	AmountRefunded    int     `json:"amount_refunded"`
 	AmountCaptured    int     `json:"amount_captured"`
@@ -30,10 +30,10 @@ type ChargeData struct {
 
 type ChargeInput struct {
 	Amount               int     `form:"amount,omitempty"`
-	CustomerId           string  `form:"customer_id,omitempty"`
+	CustomerID           string  `form:"customer_id,omitempty"`
 	Currency             string  `form:"currency,omitempty"`
 	StatementDescription *string `form:"statement_description,omitempty"`
 	Email                string  `form:"email,omitempty"`
 	PhoneNumber          *string `form:"phone_number,omitempty"`
-	CardId               string  `form:"card_id,omitempty"`
+	CardID               string  `form:"card_id,omitempty"`
 }

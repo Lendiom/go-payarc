@@ -11,7 +11,10 @@ import (
 )
 
 func (s *CustomerService) Update(id string, input CustomerInput) (*CustomerData, error) {
-	data := utils.GenerateFormPayload(input)
+	data, err := utils.GenerateFormPayload(input)
+	if err != nil {
+		return nil, err
+	}
 
 	s.client.Url.Path = path.Join(s.client.Url.Path, id)
 	req, err := http.NewRequest("PATCH", s.client.Url.String(), strings.NewReader(data.Encode()))
@@ -27,8 +30,8 @@ func (s *CustomerService) Update(id string, input CustomerInput) (*CustomerData,
 	if err != nil {
 		return nil, err
 	}
-
 	defer res.Body.Close()
+
 	var customer Customer
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
@@ -54,8 +57,8 @@ func (s *CustomerService) UpdateDefaultCard(customerId, defaultCardId string) (*
 	if err != nil {
 		return nil, err
 	}
-
 	defer res.Body.Close()
+
 	var customer Customer
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
