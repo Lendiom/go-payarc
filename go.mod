@@ -1,6 +1,6 @@
-module go-payarc
+module github.com/Lendiom/go-payarc
 
-go 1.21.1
+go 1.18
 
 require github.com/go-playground/form v3.1.4+incompatible
 

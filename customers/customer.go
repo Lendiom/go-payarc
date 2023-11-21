@@ -1,6 +1,6 @@
 package customers
 
-import "go-payarc/charges"
+import "github.com/Lendiom/go-payarc/charges"
 
 type Customers struct {
 	Customers []CustomerData `json:"data"`

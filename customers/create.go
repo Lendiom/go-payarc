@@ -3,10 +3,11 @@ package customers
 import (
 	"encoding/json"
 	"fmt"
-	"go-payarc/utils"
 	"net/http"
 	"path"
 	"strings"
+
+	"github.com/Lendiom/go-payarc/utils"
 )
 
 func (s *CustomerService) Create(input CustomerInput) (*CustomerData, error) {

@@ -3,9 +3,10 @@ package charges
 import (
 	"encoding/json"
 	"fmt"
-	"go-payarc/utils"
 	"net/http"
 	"strings"
+
+	"github.com/Lendiom/go-payarc/utils"
 )
 
 func (s *ChargeService) Create(input ChargeInput) (*ChargeData, error) {
