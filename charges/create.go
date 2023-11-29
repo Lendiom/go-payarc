@@ -3,13 +3,17 @@ package charges
 import (
 	"encoding/json"
 	"fmt"
-	"go-payarc/utils"
 	"net/http"
 	"strings"
+
+	"github.com/Lendiom/go-payarc/utils"
 )
 
 func (s *ChargeService) Create(input ChargeInput) (*ChargeData, error) {
-	data := utils.GenerateFormPayload(input)
+	data, err := utils.GenerateFormPayload(input)
+	if err != nil {
+		return nil, err
+	}
 
 	req, err := http.NewRequest("POST", s.client.Url.String(), strings.NewReader(data.Encode()))
 	if err != nil {
@@ -24,7 +28,6 @@ func (s *ChargeService) Create(input ChargeInput) (*ChargeData, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer res.Body.Close()
 
 	var charge Charge

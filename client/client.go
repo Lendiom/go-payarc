@@ -7,6 +7,13 @@ import (
 	"time"
 )
 
+type PayArcEnvironment int
+
+const (
+	PayArcEnvironmentTest PayArcEnvironment = iota
+	PayArcEnvironmentProduction PayArcEnvironment = iota
+)
+
 var testBaseURL = url.URL{
 	Scheme: "https",
 	Host:   "testapi.payarc.net",
@@ -25,7 +32,7 @@ type Client struct {
 	Url        *url.URL
 }
 
-func NewClient(apiKey string) (*Client, error) {
+func NewClient(apiKey string, environment PayArcEnvironment) (*Client, error) {
 	if apiKey == "" {
 		return nil, fmt.Errorf("no api key provided")
 	}
@@ -37,9 +44,10 @@ func NewClient(apiKey string) (*Client, error) {
 		},
 	}
 
-	if true {
+	switch environment {
+	case PayArcEnvironmentTest:
 		client.Url = &testBaseURL
-	} else {
+	case PayArcEnvironmentProduction:
 		client.Url = &baseURL
 	}
 

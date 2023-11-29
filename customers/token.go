@@ -5,7 +5,7 @@ type TokenData struct {
 }
 
 type Token struct {
-	Id string `json:"id" form:"token_id,omitempty"`
+	ID string `json:"id" form:"token_id,omitempty"`
 }
 
 type TokenInput struct {
@@ -13,7 +13,7 @@ type TokenInput struct {
 	CardNumber     string  `form:"card_number,omitempty"`
 	ExpMonth       string  `form:"exp_month,omitempty"`
 	ExpYear        string  `form:"exp_year,omitempty"`
-	Ccv            string  `form:"cvv,omitempty"`
+	CCV            string  `form:"cvv,omitempty"`
 	CardHolderName *string `form:"card_holder_name,omitempty"`
 	Address1       *string `form:"address_1,omitempty"`
 	Address2       *string `form:"address_2,omitempty"`

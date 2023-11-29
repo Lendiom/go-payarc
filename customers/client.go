@@ -1,18 +1,17 @@
 package customers
 
 import (
-	"go-payarc/client"
+	"github.com/Lendiom/go-payarc/client"
 )
 
 type CustomerService struct {
 	client *client.Client
 }
 
-func NewCustomerService(apiKey string) (*CustomerService, error) {
-	client, err := client.NewClient(apiKey)
-
+func NewCustomerService(apiKey string, environment client.PayArcEnvironment) (*CustomerService, error) {
+	client, err := client.NewClient(apiKey, environment)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	client.Url.Path = "v1/customers"

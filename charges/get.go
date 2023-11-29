@@ -19,8 +19,8 @@ func (s *ChargeService) GetAll() ([]ChargeData, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer res.Body.Close()
+
 	var charges Charges
 	if err := json.NewDecoder(res.Body).Decode(&charges); err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (s *ChargeService) GetAll() ([]ChargeData, error) {
 	return charges.Charges, nil
 }
 
-func (s *ChargeService) GetById(id string) (*ChargeData, error) {
+func (s *ChargeService) GetByID(id string) (*ChargeData, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
 	if err != nil {
 		return nil, err
@@ -42,11 +42,10 @@ func (s *ChargeService) GetById(id string) (*ChargeData, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer res.Body.Close()
+
 	var charge Charge
 	if err := json.NewDecoder(res.Body).Decode(&charge); err != nil {
-		println("here")
 		return nil, err
 	}
 

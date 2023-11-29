@@ -3,14 +3,18 @@ package customers
 import (
 	"encoding/json"
 	"fmt"
-	"go-payarc/utils"
 	"net/http"
 	"path"
 	"strings"
+
+	"github.com/Lendiom/go-payarc/utils"
 )
 
 func (s *CustomerService) Create(input CustomerInput) (*CustomerData, error) {
-	data := utils.GenerateFormPayload(input)
+	data, err := utils.GenerateFormPayload(input)
+	if err != nil {
+		return nil, err
+	}
 
 	req, err := http.NewRequest("POST", s.client.Url.String(), strings.NewReader(data.Encode()))
 	if err != nil {
@@ -25,8 +29,8 @@ func (s *CustomerService) Create(input CustomerInput) (*CustomerData, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer res.Body.Close()
+
 	var customer Customer
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
@@ -41,7 +45,10 @@ func (s *CustomerService) CreateCard(id string, input TokenInput) (*CustomerData
 		return nil, err
 	}
 
-	data := utils.GenerateFormPayload(token)
+	data, err := utils.GenerateFormPayload(token)
+	if err != nil {
+		return nil, err
+	}
 
 	s.client.Url.Path = path.Join(s.client.Url.Path, id)
 
@@ -58,8 +65,8 @@ func (s *CustomerService) CreateCard(id string, input TokenInput) (*CustomerData
 	if err != nil {
 		return nil, err
 	}
-
 	defer res.Body.Close()
+
 	var customer Customer
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
@@ -69,10 +76,14 @@ func (s *CustomerService) CreateCard(id string, input TokenInput) (*CustomerData
 }
 
 func (s *CustomerService) createToken(input TokenInput) (*Token, error) {
-	data := utils.GenerateFormPayload(input)
+	data, err := utils.GenerateFormPayload(input)
+	if err != nil {
+		return nil, err
+	}
 
 	url := *s.client.Url
 	url.Path = "v1/tokens"
+
 	req, err := http.NewRequest("POST", url.String(), strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, err
@@ -86,8 +97,8 @@ func (s *CustomerService) createToken(input TokenInput) (*Token, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer res.Body.Close()
+
 	var tokenData TokenData
 	if err := json.NewDecoder(res.Body).Decode(&tokenData); err != nil {
 		return nil, err
