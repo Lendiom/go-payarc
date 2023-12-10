@@ -40,7 +40,7 @@ func (s *Service) Create(input CustomerInput) (*CustomerData, error) {
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode > http.StatusIMUsed && res.StatusCode < http.StatusOK {
+	if res.StatusCode > http.StatusIMUsed || res.StatusCode < http.StatusOK {
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
 			return nil, err
@@ -85,7 +85,7 @@ func (s *Service) CreateCard(id string, input TokenInput) (*CustomerData, *payar
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode > http.StatusIMUsed && res.StatusCode < http.StatusOK {
+	if res.StatusCode > http.StatusIMUsed || res.StatusCode < http.StatusOK {
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
 			return nil, nil, err
@@ -142,7 +142,7 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode > http.StatusIMUsed && res.StatusCode < http.StatusOK {
+	if res.StatusCode > http.StatusIMUsed || res.StatusCode < http.StatusOK {
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
 			return nil, err

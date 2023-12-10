@@ -18,6 +18,15 @@ func (cs CardSource) Valid() bool {
 	}
 }
 
+type CardBrand string
+
+var (
+	CardBrandVisa            CardBrand = "V"
+	CardBrandMastercard      CardBrand = "M"
+	CardBrandDiscover        CardBrand = "R"
+	CardBrandAmericanExpress CardBrand = "X"
+)
+
 type CardResponse struct {
 	Data Card `json:"data,omitempty"`
 }
@@ -26,7 +35,7 @@ type Card struct {
 	Object      string     `json:"object,omitempty"`
 	ID          string     `json:"id,omitempty"`
 	CustomerID  string     `json:"customer_id,omitempty"`
-	Brand       string     `json:"brand,omitempty"`
+	Brand       CardBrand  `json:"brand,omitempty"`
 	First6Digit int        `json:"first6digit,omitempty"`
 	Last4Digit  string     `json:"last4digit,omitempty"`
 	ExpMonth    string     `json:"exp_month,omitempty"`
