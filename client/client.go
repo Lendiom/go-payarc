@@ -1,7 +1,7 @@
 package client
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"net/url"
 	"time"
@@ -10,7 +10,7 @@ import (
 type PayArcEnvironment int
 
 const (
-	PayArcEnvironmentTest PayArcEnvironment = iota
+	PayArcEnvironmentTest       PayArcEnvironment = iota
 	PayArcEnvironmentProduction PayArcEnvironment = iota
 )
 
@@ -34,7 +34,7 @@ type Client struct {
 
 func NewClient(apiKey string, environment PayArcEnvironment) (*Client, error) {
 	if apiKey == "" {
-		return nil, fmt.Errorf("no api key provided")
+		return nil, errors.New("no api key provided")
 	}
 
 	client := &Client{

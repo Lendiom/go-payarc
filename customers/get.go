@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-func (s *CustomerService) GetAll() ([]CustomerData, error) {
-	req, err := http.NewRequest("GET", s.client.Url.String(), nil)
+func (s *Service) GetAll() ([]CustomerData, error) {
+	req, err := http.NewRequest(http.MethodGet, s.client.Url.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -29,8 +29,8 @@ func (s *CustomerService) GetAll() ([]CustomerData, error) {
 	return customers.Customers, nil
 }
 
-func (s *CustomerService) GetByID(id string) (*CustomerData, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
+func (s *Service) GetByID(id string) (*CustomerData, error) {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
 	if err != nil {
 		return nil, err
 	}

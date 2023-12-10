@@ -6,7 +6,7 @@ import (
 	"path"
 )
 
-func (s *CustomerService) Delete(id string) error {
+func (s *Service) Delete(id string) error {
 	s.client.Url.Path = path.Join(s.client.Url.Path, id)
 
 	req, err := http.NewRequest("DELETE", s.client.Url.String(), nil)
@@ -26,8 +26,8 @@ func (s *CustomerService) Delete(id string) error {
 	return nil
 }
 
-func (s *CustomerService) DeleteCard(customerId, cardId string) error {
-	s.client.Url.Path = path.Join(s.client.Url.Path, customerId, "cards", cardId)
+func (s *Service) DeleteCard(customerID, cardID string) error {
+	s.client.Url.Path = path.Join(s.client.Url.Path, customerID, "cards", cardID)
 
 	req, err := http.NewRequest("DELETE", s.client.Url.String(), nil)
 	if err != nil {

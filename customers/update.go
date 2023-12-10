@@ -10,14 +10,14 @@ import (
 	"github.com/Lendiom/go-payarc/utils"
 )
 
-func (s *CustomerService) Update(id string, input CustomerInput) (*CustomerData, error) {
+func (s *Service) Update(id string, input CustomerInput) (*CustomerData, error) {
 	data, err := utils.GenerateFormPayload(input)
 	if err != nil {
 		return nil, err
 	}
 
 	s.client.Url.Path = path.Join(s.client.Url.Path, id)
-	req, err := http.NewRequest("PATCH", s.client.Url.String(), strings.NewReader(data.Encode()))
+	req, err := http.NewRequest(http.MethodPatch, s.client.Url.String(), strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, err
 	}
@@ -40,13 +40,13 @@ func (s *CustomerService) Update(id string, input CustomerInput) (*CustomerData,
 	return &customer.Customer, err
 }
 
-func (s *CustomerService) UpdateDefaultCard(customerId, defaultCardId string) (*CustomerData, error) {
-	s.client.Url.Path = path.Join(s.client.Url.Path, customerId)
+func (s *Service) UpdateDefaultCard(customerID, defaultCardID string) error {
+	s.client.Url.Path = path.Join(s.client.Url.Path, customerID)
 
-	payload := strings.NewReader(fmt.Sprintf("default_card_id=%s", defaultCardId))
-	req, err := http.NewRequest("PATCH", s.client.Url.String(), payload)
+	payload := strings.NewReader(fmt.Sprintf("default_card_id=%s", defaultCardID))
+	req, err := http.NewRequest(http.MethodPatch, s.client.Url.String(), payload)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", s.client.ApiKey))
@@ -55,14 +55,9 @@ func (s *CustomerService) UpdateDefaultCard(customerId, defaultCardId string) (*
 
 	res, err := s.client.HttpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer res.Body.Close()
 
-	var customer Customer
-	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
-		return nil, err
-	}
-
-	return &customer.Customer, err
+	return nil
 }

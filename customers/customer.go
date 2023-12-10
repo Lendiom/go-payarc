@@ -1,6 +1,9 @@
 package customers
 
-import "github.com/Lendiom/go-payarc/charges"
+import (
+	"github.com/Lendiom/go-payarc"
+	"github.com/Lendiom/go-payarc/charges"
+)
 
 type Customers struct {
 	Customers []CustomerData `json:"data"`
@@ -32,16 +35,7 @@ type CustomerData struct {
 }
 
 type CardData struct {
-	Cards []Card `json:"data"`
-}
-
-type Card struct {
-	Object    string `json:"object"`
-	ID        string `json:"id"`
-	Last4     string `json:"last4digit"`
-	ExpMonth  string `json:"exp_month"`
-	ExpYear   string `json:"exp_year"`
-	IsDefault int    `json:"is_default"`
+	Cards []payarc.Card `json:"data"`
 }
 
 type CustomerInput struct {

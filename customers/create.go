@@ -2,21 +2,30 @@ package customers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"path"
 	"strings"
 
+	"github.com/Lendiom/go-payarc"
 	"github.com/Lendiom/go-payarc/utils"
 )
 
-func (s *CustomerService) Create(input CustomerInput) (*CustomerData, error) {
+var (
+	ErrInvalidExpirationMonth = errors.New("card expiration month must be a two digit number")
+	ErrInvalidExpirationYear  = errors.New("card expiration year must be a four digit number")
+	ErrInvalidCardNumber      = errors.New("card number must be 14 to 19 digits long")
+	ErrInvalidCardSource      = errors.New("card source is invalid")
+)
+
+func (s *Service) Create(input CustomerInput) (*CustomerData, error) {
 	data, err := utils.GenerateFormPayload(input)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", s.client.Url.String(), strings.NewReader(data.Encode()))
+	req, err := http.NewRequest(http.MethodPost, s.client.Url.String(), strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, err
 	}
@@ -30,6 +39,15 @@ func (s *CustomerService) Create(input CustomerInput) (*CustomerData, error) {
 		return nil, err
 	}
 	defer res.Body.Close()
+
+	if res.StatusCode > http.StatusIMUsed && res.StatusCode < http.StatusOK {
+		var errMsg payarc.RequestError
+		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
+			return nil, err
+		}
+
+		return nil, fmt.Errorf("create token failed: %s", errMsg.Message)
+	}
 
 	var customer Customer
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
@@ -39,22 +57,22 @@ func (s *CustomerService) Create(input CustomerInput) (*CustomerData, error) {
 	return &customer.Customer, err
 }
 
-func (s *CustomerService) CreateCard(id string, input TokenInput) (*CustomerData, error) {
+func (s *Service) CreateCard(id string, input TokenInput) (*CustomerData, *payarc.Card, error) {
 	token, err := s.createToken(input)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	data, err := utils.GenerateFormPayload(token)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	s.client.Url.Path = path.Join(s.client.Url.Path, id)
 
-	req, err := http.NewRequest("PATCH", s.client.Url.String(), strings.NewReader(data.Encode()))
+	req, err := http.NewRequest(http.MethodPatch, s.client.Url.String(), strings.NewReader(data.Encode()))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", s.client.ApiKey))
@@ -63,19 +81,44 @@ func (s *CustomerService) CreateCard(id string, input TokenInput) (*CustomerData
 
 	res, err := s.client.HttpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer res.Body.Close()
 
-	var customer Customer
-	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
-		return nil, err
+	if res.StatusCode > http.StatusIMUsed && res.StatusCode < http.StatusOK {
+		var errMsg payarc.RequestError
+		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
+			return nil, nil, err
+		}
+
+		return nil, nil, fmt.Errorf("create payment method failed: %s", errMsg.Message)
 	}
 
-	return &customer.Customer, nil
+	var customer Customer
+	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
+		return nil, nil, err
+	}
+
+	return &customer.Customer, &token.Card.Data, nil
 }
 
-func (s *CustomerService) createToken(input TokenInput) (*Token, error) {
+func (s *Service) createToken(input TokenInput) (*Token, error) {
+	if len(input.ExpMonth) != 2 {
+		return nil, ErrInvalidExpirationMonth
+	}
+
+	if len(input.ExpYear) != 4 {
+		return nil, ErrInvalidExpirationYear
+	}
+
+	if cardLen := len(input.CardNumber); cardLen > 19 || cardLen < 14 {
+		return nil, ErrInvalidCardNumber
+	}
+
+	if !input.CardSource.Valid() {
+		return nil, ErrInvalidCardSource
+	}
+
 	data, err := utils.GenerateFormPayload(input)
 	if err != nil {
 		return nil, err
@@ -84,7 +127,7 @@ func (s *CustomerService) createToken(input TokenInput) (*Token, error) {
 	url := *s.client.Url
 	url.Path = "v1/tokens"
 
-	req, err := http.NewRequest("POST", url.String(), strings.NewReader(data.Encode()))
+	req, err := http.NewRequest(http.MethodPost, url.String(), strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, err
 	}
@@ -99,10 +142,19 @@ func (s *CustomerService) createToken(input TokenInput) (*Token, error) {
 	}
 	defer res.Body.Close()
 
-	var tokenData TokenData
+	if res.StatusCode > http.StatusIMUsed && res.StatusCode < http.StatusOK {
+		var errMsg payarc.RequestError
+		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
+			return nil, err
+		}
+
+		return nil, fmt.Errorf("create token failed: %s", errMsg.Message)
+	}
+
+	var tokenData TokenResponse
 	if err := json.NewDecoder(res.Body).Decode(&tokenData); err != nil {
 		return nil, err
 	}
 
-	return &tokenData.Token, nil
+	return &tokenData.Data, nil
 }
