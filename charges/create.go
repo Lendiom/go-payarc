@@ -1,21 +1,25 @@
 package charges
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 
+	"github.com/Lendiom/go-payarc"
 	"github.com/Lendiom/go-payarc/utils"
 )
 
-func (s *ChargeService) Create(input ChargeInput) (*ChargeData, error) {
+func (s *Service) Create(input ChargeInput) (*payarc.Charge, error) {
 	data, err := utils.GenerateFormPayload(input)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", s.client.Url.String(), strings.NewReader(data.Encode()))
+	req, err := http.NewRequest(http.MethodPost, s.client.Url.String(), strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, err
 	}
@@ -24,16 +28,32 @@ func (s *ChargeService) Create(input ChargeInput) (*ChargeData, error) {
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	res, err := s.client.HttpClient.Do(req)
+	r, err := s.client.HttpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer r.Body.Close()
 
-	var charge Charge
-	if err := json.NewDecoder(res.Body).Decode(&charge); err != nil {
+	body, _ := ioutil.ReadAll(r.Body)
+	log.Println(string(body))
+
+	r.Body = ioutil.NopCloser(bytes.NewReader(body))
+
+	if r.StatusCode > http.StatusIMUsed || r.StatusCode < http.StatusOK {
+		var errMsg payarc.RequestError
+		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
+			return nil, err
+		}
+
+		log.Printf("Failed to create the charge: %+v", errMsg)
+
+		return nil, fmt.Errorf("create charge failed: %s", errMsg.Message)
+	}
+
+	var res payarc.ChargeResponse
+	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
 		return nil, err
 	}
 
-	return &charge.Charge, nil
+	return &res.Charge, nil
 }

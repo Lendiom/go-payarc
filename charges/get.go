@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/Lendiom/go-payarc"
 )
 
-func (s *ChargeService) GetAll() ([]ChargeData, error) {
-	req, err := http.NewRequest("GET", s.client.Url.String(), nil)
+func (s *Service) GetAll() ([]payarc.Charge, error) {
+	req, err := http.NewRequest(http.MethodGet, s.client.Url.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -15,22 +17,22 @@ func (s *ChargeService) GetAll() ([]ChargeData, error) {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", s.client.ApiKey))
 	req.Header.Add("Accept", "application/json")
 
-	res, err := s.client.HttpClient.Do(req)
+	r, err := s.client.HttpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer r.Body.Close()
 
-	var charges Charges
-	if err := json.NewDecoder(res.Body).Decode(&charges); err != nil {
+	var res payarc.ChargesResponse
+	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
 		return nil, err
 	}
 
-	return charges.Charges, nil
+	return res.Charges, nil
 }
 
-func (s *ChargeService) GetByID(id string) (*ChargeData, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
+func (s *Service) GetByID(id string) (*payarc.Charge, error) {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -38,16 +40,16 @@ func (s *ChargeService) GetByID(id string) (*ChargeData, error) {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", s.client.ApiKey))
 	req.Header.Add("Accept", "application/json")
 
-	res, err := s.client.HttpClient.Do(req)
+	r, err := s.client.HttpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer r.Body.Close()
 
-	var charge Charge
-	if err := json.NewDecoder(res.Body).Decode(&charge); err != nil {
+	var res payarc.ChargeResponse
+	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
 		return nil, err
 	}
 
-	return &charge.Charge, nil
+	return &res.Charge, nil
 }

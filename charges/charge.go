@@ -1,39 +1,18 @@
 package charges
 
-type Charges struct {
-	Charges []ChargeData `json:"data"`
-}
-
-type Charge struct {
-	Charge ChargeData `json:"data"`
-}
-
-type ChargeData struct {
-	Object            string  `json:"object"`
-	ID                string  `json:"id"`
-	RealID            int     `json:"real_id"`
-	Amount            int     `json:"amount"`
-	AmountRefunded    int     `json:"amount_refunded"`
-	AmountCaptured    int     `json:"amount_captured"`
-	AmountVoided      int     `json:"amount_voided"`
-	PayArcFees        int     `json:"payarc_fees"`
-	Type              string  `json:"type"`
-	NetAmount         int     `json:"net_amount"`
-	Captured          int     `json:"captured"`
-	IsRefunded        int     `json:"is_refunded"`
-	Status            string  `json:"status"`
-	AuthCode          string  `json:"auth_code"`
-	FailureCode       *string `json:"failure_code"`
-	FailureMessage    *string `json:"failure_message"`
-	ChargeDescription *string `json:"charge_description"`
-}
+import "github.com/Lendiom/go-payarc"
 
 type ChargeInput struct {
-	Amount               int     `form:"amount,omitempty"`
-	CustomerID           string  `form:"customer_id,omitempty"`
-	Currency             string  `form:"currency,omitempty"`
-	StatementDescription *string `form:"statement_description,omitempty"`
-	Email                string  `form:"email,omitempty"`
-	PhoneNumber          *string `form:"phone_number,omitempty"`
-	CardID               string  `form:"card_id,omitempty"`
+	Amount            int64          `form:"amount"`
+	Capture           payarc.Boolean `form:"capture"`
+	CustomerID        string         `form:"customer_id"`
+	CardID            string         `form:"card_id,omitempty"`
+	ExternalOrderID   *int           `form:"external_order_id,omitempty"`
+	ChargeDescription string         `form:"charge_description,omitempty"`
+
+	Currency                 payarc.Currency `form:"currency"`
+	StatementDescription     *string         `form:"statement_description,omitempty"`
+	Metadata                 *string         `form:"metadata,omitempty"` //TODO: convert this to map[string]string
+	DoNotSendEmailToCustomer payarc.YesOrNo  `form:"do_not_send_email_to_customer"`
+	DoNotSendSmsToCustomer   payarc.YesOrNo  `form:"do_not_send_sms_to_customer"`
 }

@@ -28,27 +28,27 @@ var baseURL = url.URL{
 
 type Client struct {
 	ApiKey     string
-	HttpClient *http.Client
-	Url        *url.URL
+	HttpClient http.Client
+	Url        url.URL
 }
 
-func NewClient(apiKey string, environment PayArcEnvironment) (*Client, error) {
+func NewClient(apiKey string, environment PayArcEnvironment) (Client, error) {
 	if apiKey == "" {
-		return nil, errors.New("no api key provided")
+		return Client{}, errors.New("no api key provided")
 	}
 
-	client := &Client{
+	client := Client{
 		ApiKey: apiKey,
-		HttpClient: &http.Client{
+		HttpClient: http.Client{
 			Timeout: time.Second * 30,
 		},
 	}
 
 	switch environment {
 	case PayArcEnvironmentTest:
-		client.Url = &testBaseURL
+		client.Url = testBaseURL
 	case PayArcEnvironmentProduction:
-		client.Url = &baseURL
+		client.Url = baseURL
 	}
 
 	return client, nil

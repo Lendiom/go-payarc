@@ -124,7 +124,7 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 		return nil, err
 	}
 
-	url := *s.client.Url
+	url := s.client.Url
 	url.Path = "v1/tokens"
 
 	req, err := http.NewRequest(http.MethodPost, url.String(), strings.NewReader(data.Encode()))

@@ -27,6 +27,10 @@ var (
 	CardBrandAmericanExpress CardBrand = "X"
 )
 
+type CardsResponse struct {
+	Cards []Card `json:"data"`
+}
+
 type CardResponse struct {
 	Data Card `json:"data,omitempty"`
 }

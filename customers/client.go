@@ -5,7 +5,7 @@ import (
 )
 
 type Service struct {
-	client *client.Client
+	client client.Client
 }
 
 func NewCustomerService(apiKey string, environment client.PayArcEnvironment) (*Service, error) {
