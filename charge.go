@@ -25,11 +25,11 @@ type Charge struct {
 	StatementDescription string `json:"statement_description"`
 	ExternalOrderID      int    `json:"external_order_id"`
 
-	Amount         int    `json:"amount"`
-	AmountApproved string `json:"amount_approved"`
-	AmountCaptured int    `json:"amount_captured"`
-	AmountRefunded int    `json:"amount_refunded"`
-	AmountVoided   int    `json:"amount_voided"`
+	Amount         int `json:"amount"`
+	AmountApproved int `json:"amount_approved"`
+	AmountCaptured int `json:"amount_captured"`
+	AmountRefunded int `json:"amount_refunded"`
+	AmountVoided   int `json:"amount_voided"`
 
 	ApplicationFeeAmount int `json:"application_fee_amount"`
 	TipAmount            int `json:"tip_amount"`
@@ -37,10 +37,10 @@ type Charge struct {
 	NetAmount            int `json:"net_amount"`
 	Surcharge            int `json:"surcharge"`
 
-	Captured    string       `json:"captured"` //Captured is a string 1 or 0, which is true or false respectively
+	Captured    Boolean      `json:"captured"`
 	IsRefunded  Boolean      `json:"is_refunded"`
 	Status      ChargeStatus `json:"status"`
-	UnderReview bool         `json:"under_review"`
+	UnderReview Boolean      `json:"under_review"`
 
 	CardLevel      ChargeCardLevel `json:"card_level"`
 	AuthCode       string          `json:"auth_code"`
