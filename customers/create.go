@@ -1,9 +1,12 @@
 package customers
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"path"
 	"strings"
@@ -41,12 +44,22 @@ func (s *Service) Create(input CustomerInput) (*CustomerData, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode > http.StatusIMUsed || res.StatusCode < http.StatusOK {
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		log.Println("Failed to create a customer. Result is:")
+		log.Println(string(body))
+
+		res.Body = ioutil.NopCloser(bytes.NewReader(body))
+
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
 			return nil, err
 		}
 
-		return nil, fmt.Errorf("create token failed: %s", errMsg.Message)
+		return nil, fmt.Errorf("create customer failed: %s", errMsg.Message)
 	}
 
 	var customer Customer
@@ -86,6 +99,16 @@ func (s *Service) CreateCard(id string, input TokenInput) (*CustomerData, *payar
 	defer res.Body.Close()
 
 	if res.StatusCode > http.StatusIMUsed || res.StatusCode < http.StatusOK {
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		log.Println("Failed to create a card. Result is:")
+		log.Println(string(body))
+
+		res.Body = ioutil.NopCloser(bytes.NewReader(body))
+
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
 			return nil, nil, err
@@ -143,6 +166,16 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode > http.StatusIMUsed || res.StatusCode < http.StatusOK {
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		log.Println("Failed to create a token. Result is:")
+		log.Println(string(body))
+
+		res.Body = ioutil.NopCloser(bytes.NewReader(body))
+
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
 			return nil, err

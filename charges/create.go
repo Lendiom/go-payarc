@@ -1,8 +1,10 @@
 package charges
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -33,6 +35,16 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 	defer r.Body.Close()
 
 	if r.StatusCode > http.StatusIMUsed || r.StatusCode < http.StatusOK {
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		log.Println("Failed to create a charge. Result is:")
+		log.Println(string(body))
+
+		r.Body = ioutil.NopCloser(bytes.NewReader(body))
+
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
 			return nil, err
