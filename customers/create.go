@@ -59,7 +59,7 @@ func (s *Service) Create(input CustomerInput) (*CustomerData, error) {
 			return nil, err
 		}
 
-		return nil, fmt.Errorf("create customer failed: %s", errMsg.Message)
+		return nil, fmt.Errorf("create customer failed: %s OR %s", errMsg.Message, errMsg.Error)
 	}
 
 	var customer Customer
@@ -114,7 +114,7 @@ func (s *Service) CreateCard(id string, input TokenInput) (*CustomerData, *payar
 			return nil, nil, err
 		}
 
-		return nil, nil, fmt.Errorf("create payment method failed: %s", errMsg.Message)
+		return nil, nil, fmt.Errorf("create payment method failed: %s OR %s", errMsg.Message, errMsg.Error)
 	}
 
 	var customer Customer
@@ -181,7 +181,7 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 			return nil, err
 		}
 
-		return nil, fmt.Errorf("create token failed: %s", errMsg.Message)
+		return nil, fmt.Errorf("create token failed: %s OR %s", errMsg.Message, errMsg.Error)
 	}
 
 	var tokenData TokenResponse
