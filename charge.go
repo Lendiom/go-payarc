@@ -14,7 +14,8 @@ type ChargeResponse struct {
 }
 
 type ChargesResponse struct {
-	Charges []Charge `json:"data"`
+	Charges  []Charge `json:"data"`
+	Metadata Metadata `json:"meta"`
 }
 
 type Charge struct {
