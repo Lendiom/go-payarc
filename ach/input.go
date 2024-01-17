@@ -19,7 +19,7 @@ type CreateAchChargeInput struct {
 	CustomerID string `form:"customer_id"` //CustomerID is required if the AccountNumber, RoutingNumber, FirstName, LastName are not provided
 
 	AccountType payarc.BankAccountType `form:"account_type"`
-	Currency    string                 `form:"currency"` //Currency is the three letter ISO currency code. Currently on usd is allowed.
+	Currency    payarc.Currency        `form:"currency"` //Currency is the three letter ISO currency code. Currently on usd is allowed.
 	Amount      int64                  `form:"amount"`   //Amount is a positive integer in cents representing how much to charge.
 	Type        payarc.ACHFlowType     `form:"type"`     //Type is required
 	SecCode     AchCreateChargeSecCode `form:"sec_code"` //SecCode must be one of the following: ARC, BOC, CCD, POP, PPD, RCK, TEL, WEB
