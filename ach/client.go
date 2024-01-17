@@ -8,7 +8,7 @@ type Service struct {
 	client client.Client
 }
 
-func NewChargeService(apiKey string, environment client.PayArcEnvironment) (*Service, error) {
+func NewAchService(apiKey string, environment client.PayArcEnvironment) (*Service, error) {
 	client, err := client.NewClient(apiKey, environment)
 	if err != nil {
 		return nil, err
