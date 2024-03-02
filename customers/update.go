@@ -7,10 +7,11 @@ import (
 	"path"
 	"strings"
 
+	"github.com/Lendiom/go-payarc"
 	"github.com/Lendiom/go-payarc/utils"
 )
 
-func (s *Service) Update(id string, input CustomerInput) (*CustomerData, error) {
+func (s *Service) Update(id string, input CustomerInput) (*payarc.Customer, error) {
 	data, err := utils.GenerateFormPayload(input)
 	if err != nil {
 		return nil, err
@@ -32,7 +33,7 @@ func (s *Service) Update(id string, input CustomerInput) (*CustomerData, error) 
 	}
 	defer res.Body.Close()
 
-	var customer Customer
+	var customer CustomerResponse
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
 	}

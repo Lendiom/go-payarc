@@ -22,7 +22,7 @@ var (
 	ErrInvalidCardSource      = errors.New("card source is invalid")
 )
 
-func (s *Service) Create(input CustomerInput) (*CustomerData, error) {
+func (s *Service) Create(input CustomerInput) (*payarc.Customer, error) {
 	data, err := utils.GenerateFormPayload(input)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (s *Service) Create(input CustomerInput) (*CustomerData, error) {
 		return nil, fmt.Errorf("create customer failed: %s OR %s", errMsg.Message, errMsg.Error)
 	}
 
-	var customer Customer
+	var customer CustomerResponse
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (s *Service) Create(input CustomerInput) (*CustomerData, error) {
 	return &customer.Customer, err
 }
 
-func (s *Service) CreateCard(id string, input TokenInput) (*CustomerData, *payarc.Card, error) {
+func (s *Service) CreateCard(id string, input TokenInput) (*payarc.Customer, *payarc.Card, error) {
 	token, err := s.createToken(input)
 	if err != nil {
 		return nil, nil, err
@@ -117,7 +117,7 @@ func (s *Service) CreateCard(id string, input TokenInput) (*CustomerData, *payar
 		return nil, nil, fmt.Errorf("create payment method failed: %s OR %s", errMsg.Message, errMsg.Error)
 	}
 
-	var customer Customer
+	var customer CustomerResponse
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, nil, err
 	}

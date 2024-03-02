@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/Lendiom/go-payarc"
 )
 
-func (s *Service) GetAll() ([]CustomerData, error) {
-	req, err := http.NewRequest(http.MethodGet, s.client.Url.String(), nil)
+func (s *Service) GetAll(limit, page uint) ([]payarc.Customer, error) {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s?limit=%d&page=%d", s.client.Url.String(), limit, page), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -21,7 +23,7 @@ func (s *Service) GetAll() ([]CustomerData, error) {
 	}
 	defer res.Body.Close()
 
-	var customers Customers
+	var customers CustomersResponse
 	if err := json.NewDecoder(res.Body).Decode(&customers); err != nil {
 		return nil, err
 	}
@@ -29,7 +31,7 @@ func (s *Service) GetAll() ([]CustomerData, error) {
 	return customers.Customers, nil
 }
 
-func (s *Service) GetByID(id string) (*CustomerData, error) {
+func (s *Service) GetByID(id string) (*payarc.Customer, error) {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
 	if err != nil {
 		return nil, err
@@ -44,7 +46,7 @@ func (s *Service) GetByID(id string) (*CustomerData, error) {
 	}
 	defer res.Body.Close()
 
-	var customer Customer
+	var customer CustomerResponse
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
 	}

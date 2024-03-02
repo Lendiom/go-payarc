@@ -4,33 +4,12 @@ import (
 	"github.com/Lendiom/go-payarc"
 )
 
-type Customers struct {
-	Customers []CustomerData `json:"data"`
+type CustomersResponse struct {
+	Customers []payarc.Customer `json:"data"`
 }
 
-type Customer struct {
-	Customer CustomerData `json:"data"`
-}
-
-type CustomerData struct {
-	Object           string                 `json:"object"`
-	ID               string                 `json:"customer_id"`
-	Name             *string                `json:"name"`
-	Email            string                 `json:"email"`
-	Description      *string                `json:"description"`
-	PaymentOverdue   int                    `json:"payment_overdue"`
-	SendEmailAddress *string                `json:"send_email_address"`
-	CcEmailAddress   *string                `json:"cc_email_address"`
-	SourceID         *string                `json:"source_id"`
-	Address1         *string                `json:"address_1"`
-	Address2         *string                `json:"address_2"`
-	City             *string                `json:"city"`
-	State            *string                `json:"state"`
-	Zip              *string                `json:"zip"`
-	Phone            *string                `json:"phone"`
-	Country          *string                `json:"country"`
-	Cards            payarc.CardsResponse   `json:"card"`
-	Charges          payarc.ChargesResponse `json:"charge"`
+type CustomerResponse struct {
+	Customer payarc.Customer `json:"data"`
 }
 
 type CustomerInput struct {
