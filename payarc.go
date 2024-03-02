@@ -7,12 +7,20 @@ var (
 	True  Boolean = 1
 )
 
+func (b Boolean) AsBool() bool {
+	return b == True
+}
+
 type YesOrNo string
 
 var (
 	Yes YesOrNo = "yes"
 	No  YesOrNo = "no"
 )
+
+func (y YesOrNo) AsBool() bool {
+	return y == Yes
+}
 
 type ChargeCardLevel string
 
