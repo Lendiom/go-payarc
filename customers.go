@@ -17,6 +17,7 @@ type Customer struct {
 	Zip              *string         `json:"zip"`
 	Phone            *string         `json:"phone"`
 	Country          *string         `json:"country"`
+	BankAccounts     BanksResponse   `json:"bank_account"`
 	Cards            CardsResponse   `json:"card"`
 	Charges          ChargesResponse `json:"charge"`
 }

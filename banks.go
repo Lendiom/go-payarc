@@ -1,5 +1,9 @@
 package payarc
 
+type BanksResponse struct {
+	Data []BankAccount `json:"data"`
+}
+
 type BankAccountType string
 
 var (
@@ -17,8 +21,9 @@ type BankAccount struct {
 	AccountType BankAccountType `json:"account_type"`
 	SecCode     string          `json:"sec_code"`
 
-	RoutingNumber string `json:"routing_number"`
-	AccountNumber string `json:"account_number"`
+	RoutingNumber string  `json:"routing_number"`
+	AccountNumber string  `json:"account_number"`
+	IsDefault     Boolean `json:"is_default"`
 }
 
 type BankAccountResponse struct {
