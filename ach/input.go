@@ -47,7 +47,7 @@ type ACHChargeResult struct {
 	Status             string                     `json:"status"`
 	Type               payarc.ACHFlowType         `json:"type"`
 	AuthorizationID    int                        `json:"authorization_id"`
-	ValidationCode     string                     `json:"validation_code"`
+	ValidationCode     any                        `json:"validation_code"`
 	Successful         bool                       `json:"successful"`
 	ResponseMessage    string                     `json:"response_message"`
 	CreatedAt          time.Time                  `json:"created_at"`

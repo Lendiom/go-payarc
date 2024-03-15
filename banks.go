@@ -1,7 +1,7 @@
 package payarc
 
 type BanksResponse struct {
-	Data []BankAccount `json:"data"`
+	Banks []BankAccount `json:"data"`
 }
 
 type BankAccountType string

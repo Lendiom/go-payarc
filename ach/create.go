@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -34,16 +34,18 @@ func (s *Service) Create(input CreateAchChargeInput) (*ACHChargeResult, error) {
 	}
 	defer r.Body.Close()
 
-	if r.StatusCode > http.StatusIMUsed || r.StatusCode < http.StatusOK {
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			return nil, err
-		}
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
 
+	r.Body = io.NopCloser(bytes.NewReader(body))
+
+	if r.StatusCode > http.StatusIMUsed || r.StatusCode < http.StatusOK {
+		log.Println("Payload for ach charge creation is:")
+		log.Println(data.Encode())
 		log.Println("Failed to create a charge. Result is:")
 		log.Println(string(body))
-
-		r.Body = ioutil.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
@@ -57,6 +59,9 @@ func (s *Service) Create(input CreateAchChargeInput) (*ACHChargeResult, error) {
 
 	var res CreateACHChargeResponse
 	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
+		log.Println("failed to decode response body. the response was:")
+		log.Println(string(body))
+
 		return nil, err
 	}
 
