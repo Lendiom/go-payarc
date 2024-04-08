@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"path"
@@ -44,7 +44,7 @@ func (s *Service) Create(input CustomerInput) (*payarc.Customer, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode > http.StatusIMUsed || res.StatusCode < http.StatusOK {
-		body, err := ioutil.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			return nil, err
 		}
@@ -52,7 +52,7 @@ func (s *Service) Create(input CustomerInput) (*payarc.Customer, error) {
 		log.Println("Failed to create a customer. Result is:")
 		log.Println(string(body))
 
-		res.Body = ioutil.NopCloser(bytes.NewReader(body))
+		res.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
@@ -99,7 +99,7 @@ func (s *Service) CreateCard(id string, input TokenInput) (*payarc.Customer, *pa
 	defer res.Body.Close()
 
 	if res.StatusCode > http.StatusIMUsed || res.StatusCode < http.StatusOK {
-		body, err := ioutil.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -107,7 +107,7 @@ func (s *Service) CreateCard(id string, input TokenInput) (*payarc.Customer, *pa
 		log.Println("Failed to create a card. Result is:")
 		log.Println(string(body))
 
-		res.Body = ioutil.NopCloser(bytes.NewReader(body))
+		res.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
@@ -166,7 +166,7 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode > http.StatusIMUsed || res.StatusCode < http.StatusOK {
-		body, err := ioutil.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			return nil, err
 		}
@@ -174,11 +174,20 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 		log.Println("Failed to create a token. Result is:")
 		log.Println(string(body))
 
-		res.Body = ioutil.NopCloser(bytes.NewReader(body))
+		res.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
 			return nil, err
+		}
+
+		switch strings.ToLower(errMsg.Message) {
+		case "cvv2 verification failed":
+			return nil, payarc.ErrCVV2Failed
+		case "suspected fraud":
+			return nil, payarc.ErrSuspectedFraud
+		case "do not honor":
+			return nil, payarc.ErrDoNotHonor
 		}
 
 		return nil, fmt.Errorf("create token failed: %s OR %s", errMsg.Message, errMsg.Error)
