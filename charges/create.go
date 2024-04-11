@@ -57,6 +57,8 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 			return nil, payarc.ErrInsufficientFunds
 		case "suspected fraud":
 			return nil, payarc.ErrSuspectedFraud
+		case "do not honor":
+			return nil, payarc.ErrDoNotHonor
 		case "invalid from account":
 			return nil, payarc.ErrInvalidFromAccount
 		}
