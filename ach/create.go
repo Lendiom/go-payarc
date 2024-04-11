@@ -54,6 +54,11 @@ func (s *Service) Create(input CreateAchChargeInput) (*ACHChargeResult, error) {
 
 		log.Printf("Failed to create the charge: %+v", errMsg)
 
+		switch errMsg.Message {
+		case "Unauthorized SEC type":
+			return nil, payarc.ErrUnauthorizedSECType
+		}
+
 		return nil, fmt.Errorf("create charge failed: %s", errMsg.Message)
 	}
 
