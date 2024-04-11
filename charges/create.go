@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -35,7 +35,7 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 	defer r.Body.Close()
 
 	if r.StatusCode > http.StatusIMUsed || r.StatusCode < http.StatusOK {
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			return nil, err
 		}
@@ -43,7 +43,7 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 		log.Println("Failed to create a charge. Result is:")
 		log.Println(string(body))
 
-		r.Body = ioutil.NopCloser(bytes.NewReader(body))
+		r.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
@@ -51,6 +51,17 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 		}
 
 		log.Printf("Failed to create the charge: %+v", errMsg)
+
+		switch strings.ToLower(errMsg.Message) {
+		case "insufficient funds":
+			return nil, payarc.ErrInsufficientFunds
+		case "suspected fraud":
+			return nil, payarc.ErrSuspectedFraud
+		case "do not honor":
+			return nil, payarc.ErrDoNotHonor
+		case "invalid from account":
+			return nil, payarc.ErrInvalidFromAccount
+		}
 
 		return nil, fmt.Errorf("create charge failed: %s", errMsg.Message)
 	}
