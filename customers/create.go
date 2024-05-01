@@ -114,14 +114,6 @@ func (s *Service) CreateCard(id string, input TokenInput) (*payarc.Customer, *pa
 			return nil, nil, err
 		}
 
-		if strings.Contains(errMsg.Message, "Invalid CVV") {
-			return nil, nil, payarc.ErrCVV2Failed
-		} else if strings.Contains(errMsg.Message, "Suspected Fraud") {
-			return nil, nil, payarc.ErrSuspectedFraud
-		} else if strings.Contains(errMsg.Message, "Do Not Honor") {
-			return nil, nil, payarc.ErrDoNotHonor
-		}
-
 		return nil, nil, fmt.Errorf("create card failed: %s", errMsg.Message)
 	}
 
@@ -190,6 +182,8 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 		}
 
 		switch strings.ToLower(errMsg.Message) {
+		case "invalid cvv":
+			return nil, payarc.ErrInvalidCCV
 		case "cvv2 verification failed":
 			return nil, payarc.ErrCVV2Failed
 		case "suspected fraud":

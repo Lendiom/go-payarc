@@ -7,6 +7,7 @@ var (
 	ErrInvalidFromAccount  = errors.New("invalid from account, charge failed") //ErrInvalidFromAccount is similar to "Do Not Honor"
 	ErrSuspectedFraud      = errors.New("bank suspects fraud")
 	ErrDoNotHonor          = errors.New("bank said to not honor")
+	ErrInvalidCCV          = errors.New("invalid ccv")
 	ErrCVV2Failed          = errors.New("cvv2 verification failed")
 	ErrUnauthorizedSECType = errors.New("unauthorized sec type")
 )
