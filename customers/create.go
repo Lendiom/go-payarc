@@ -114,7 +114,15 @@ func (s *Service) CreateCard(id string, input TokenInput) (*payarc.Customer, *pa
 			return nil, nil, err
 		}
 
-		return nil, nil, fmt.Errorf("create payment method failed: %s OR %s", errMsg.Message, errMsg.Error)
+		if strings.Contains(errMsg.Message, "Invalid CVV") {
+			return nil, nil, payarc.ErrCVV2Failed
+		} else if strings.Contains(errMsg.Message, "Suspected Fraud") {
+			return nil, nil, payarc.ErrSuspectedFraud
+		} else if strings.Contains(errMsg.Message, "Do Not Honor") {
+			return nil, nil, payarc.ErrDoNotHonor
+		}
+
+		return nil, nil, fmt.Errorf("create card failed: %s", errMsg.Message)
 	}
 
 	var customer CustomerResponse
