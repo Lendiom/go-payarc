@@ -182,6 +182,8 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 		}
 
 		switch strings.ToLower(errMsg.Message) {
+		case "invalid card":
+			return nil, payarc.ErrInvalidCard
 		case "invalid cvv":
 			return nil, payarc.ErrInvalidCCV
 		case "cvv2 verification failed":
@@ -190,9 +192,16 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 			return nil, payarc.ErrSuspectedFraud
 		case "do not honor":
 			return nil, payarc.ErrDoNotHonor
+		case "suspected card":
+			return nil, payarc.ErrSuspectedCard
+		case "the given data was invalid.":
+			// This error usually has more details in the "errors" field
+			if cardHolderNameErrors, ok := errMsg.Errors["card_holder_name"]; ok && len(cardHolderNameErrors) > 0 {
+				return nil, errors.New(cardHolderNameErrors[0])
+			}
 		}
 
-		return nil, fmt.Errorf("create token failed: %s OR %s", errMsg.Message, errMsg.Error)
+		return nil, errors.New(errMsg.Message)
 	}
 
 	var tokenData TokenResponse

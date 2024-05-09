@@ -53,12 +53,16 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 		log.Printf("Failed to create the charge: %+v", errMsg)
 
 		switch strings.ToLower(errMsg.Message) {
+		case "invalid card":
+			return nil, payarc.ErrInvalidCard
 		case "insufficient funds":
 			return nil, payarc.ErrInsufficientFunds
 		case "suspected fraud":
 			return nil, payarc.ErrSuspectedFraud
 		case "do not honor":
 			return nil, payarc.ErrDoNotHonor
+		case "suspected card":
+			return nil, payarc.ErrSuspectedCard
 		case "invalid from account":
 			return nil, payarc.ErrInvalidFromAccount
 		}
