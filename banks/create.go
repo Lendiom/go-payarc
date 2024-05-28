@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -13,7 +13,7 @@ import (
 	"github.com/Lendiom/go-payarc/utils"
 )
 
-func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccount, error) {
+func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccountCreated, error) {
 	data, err := utils.GenerateFormPayload(input)
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccount, err
 	defer r.Body.Close()
 
 	if r.StatusCode > http.StatusIMUsed || r.StatusCode < http.StatusOK {
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			return nil, err
 		}
@@ -43,7 +43,7 @@ func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccount, err
 		log.Println("Failed to create a bank account. Result is:")
 		log.Println(string(body))
 
-		r.Body = ioutil.NopCloser(bytes.NewReader(body))
+		r.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
@@ -59,7 +59,7 @@ func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccount, err
 		return nil, fmt.Errorf("create bank account failed: %s", msg)
 	}
 
-	var res payarc.BankAccountResponse
+	var res payarc.BankAccountCreatedResponse
 	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
 		return nil, err
 	}

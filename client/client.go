@@ -40,7 +40,7 @@ func NewClient(apiKey string, environment PayArcEnvironment) (Client, error) {
 	client := Client{
 		ApiKey: apiKey,
 		HttpClient: http.Client{
-			Timeout: time.Second * 30,
+			Timeout: 3 * time.Minute,
 		},
 	}
 
