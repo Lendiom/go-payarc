@@ -26,7 +26,25 @@ type BankAccount struct {
 	IsDefault     Boolean `json:"is_default"`
 }
 
+type BankAccountCreated struct {
+	Object      string          `json:"object"`
+	ID          string          `json:"id"`
+	FirstName   string          `json:"first_name"`
+	LastName    string          `json:"last_name"`
+	AccountType BankAccountType `json:"account_type"`
+	SecCode     string          `json:"sec_code"`
+
+	RoutingNumber string `json:"routing_number"`
+	AccountNumber string `json:"account_number"`
+	IsDefault     bool   `json:"is_default"`
+}
+
 type BankAccountResponse struct {
 	BankAccount BankAccount `json:"data"`
 	Meta        Metadata    `json:"meta"`
+}
+
+type BankAccountCreatedResponse struct {
+	BankAccount BankAccountCreated `json:"data"`
+	Meta        Metadata           `json:"meta"`
 }
