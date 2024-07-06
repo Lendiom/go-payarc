@@ -12,7 +12,9 @@ var (
 type ACHChargeStatus string
 
 var (
-	ACHChargeStatusValidated ACHChargeStatus = "status"
+	ACHChargeStatusSettled  ACHChargeStatus = "settled"
+	ACHChargeStatusPending  ACHChargeStatus = "validated"
+	ACHChargeStatusRejected ACHChargeStatus = "rejected"
 )
 
 type ACHCharge struct {
