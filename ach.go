@@ -20,13 +20,14 @@ var (
 type ACHCharge struct {
 	Object              string              `json:"object"`
 	ID                  string              `json:"id"`
-	Amount              string              `json:"amount"`
+	Amount              int                 `json:"amount"`
 	Status              ACHChargeStatus     `json:"status"`
 	Type                ACHFlowType         `json:"type"`
-	AuthorizationID     int                 `json:"authorization_id"`
+	AuthorizationID     string              `json:"authorization_id"`
 	ValidationCode      string              `json:"validation_code"`
-	Successful          bool                `json:"successful"`
+	Successful          Boolean             `json:"successful"`
 	ResponseMessage     string              `json:"response_message"`
+	SecCode             string              `json:"sec_code"`
 	CreatedBy           string              `json:"created_by"`
 	CreatedAt           time.Time           `json:"created_at"`
 	UpdatedAt           time.Time           `json:"updated_at"`
