@@ -65,6 +65,8 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 			return nil, payarc.ErrSuspectedCard
 		case "invalid from account":
 			return nil, payarc.ErrInvalidFromAccount
+		case "withdrawal limit exceeded":
+			return nil, payarc.ErrWithdrawalLimitExceeded
 		}
 
 		return nil, fmt.Errorf("create charge failed: %s", errMsg.Message)
