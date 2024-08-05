@@ -61,6 +61,7 @@ func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccountCreat
 
 	var res payarc.BankAccountCreatedResponse
 	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
+		log.Println("Failed to decode the bank account create response:", err.Error())
 		return nil, err
 	}
 

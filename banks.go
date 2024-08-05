@@ -34,9 +34,9 @@ type BankAccountCreated struct {
 	AccountType BankAccountType `json:"account_type"`
 	SecCode     string          `json:"sec_code"`
 
-	RoutingNumber string `json:"routing_number"`
-	AccountNumber string `json:"account_number"`
-	IsDefault     bool   `json:"is_default"`
+	RoutingNumber string  `json:"routing_number"`
+	AccountNumber string  `json:"account_number"`
+	IsDefault     Boolean `json:"is_default"`
 }
 
 type BankAccountResponse struct {
