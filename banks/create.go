@@ -34,16 +34,16 @@ func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccountCreat
 	}
 	defer r.Body.Close()
 
-	if r.StatusCode > http.StatusIMUsed || r.StatusCode < http.StatusOK {
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			return nil, err
-		}
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
 
+	r.Body = io.NopCloser(bytes.NewReader(body))
+
+	if r.StatusCode > http.StatusIMUsed || r.StatusCode < http.StatusOK {
 		log.Println("Failed to create a bank account. Result is:")
 		log.Println(string(body))
-
-		r.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
@@ -62,6 +62,8 @@ func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccountCreat
 	var res payarc.BankAccountCreatedResponse
 	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
 		log.Println("Failed to decode the bank account create response:", err.Error())
+		log.Println(string(body))
+
 		return nil, err
 	}
 
