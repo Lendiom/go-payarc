@@ -67,6 +67,10 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 			return nil, payarc.ErrInvalidFromAccount
 		case "withdrawal limit exceeded":
 			return nil, payarc.ErrWithdrawalLimitExceeded
+		case "customer requested stop of all recurring payments from specific merchant":
+			return nil, payarc.ErrCustomerRequestedStopPayments
+		case "expired card":
+			return nil, payarc.ErrExpiredCard
 		}
 
 		return nil, fmt.Errorf("create charge failed: %s", errMsg.Message)
