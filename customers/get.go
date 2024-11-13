@@ -46,10 +46,10 @@ func (s *Service) GetByID(id string) (*payarc.Customer, error) {
 	}
 	defer res.Body.Close()
 
-	var customer CustomerResponse
+	var customer payarc.CustomerResponse
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
 	}
 
-	return &customer.Customer, nil
+	return &customer.Data, nil
 }

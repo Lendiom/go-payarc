@@ -33,12 +33,12 @@ func (s *Service) Update(id string, input CustomerInput) (*payarc.Customer, erro
 	}
 	defer res.Body.Close()
 
-	var customer CustomerResponse
+	var customer payarc.CustomerResponse
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
 	}
 
-	return &customer.Customer, err
+	return &customer.Data, err
 }
 
 func (s *Service) UpdateDefaultCard(customerID, defaultCardID string) error {

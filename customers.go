@@ -1,5 +1,9 @@
 package payarc
 
+type CustomerResponse struct {
+	Data Customer `json:"data"`
+}
+
 type Customer struct {
 	Object           string          `json:"object"`
 	ID               string          `json:"customer_id"`
