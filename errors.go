@@ -5,6 +5,7 @@ import "errors"
 var (
 	ErrInsufficientFunds             = errors.New("insufficient funds, charge failed")
 	ErrInvalidFromAccount            = errors.New("invalid from account, charge failed") //ErrInvalidFromAccount is similar to "Do Not Honor"
+	ErrGeneralCardAuthDecline        = errors.New("card authorization failed, please contact your bank")
 	ErrSuspectedFraud                = errors.New("bank suspects fraud")
 	ErrDoNotHonor                    = errors.New("bank said to not honor")
 	ErrSuspectedCard                 = errors.New("bank suspects card")

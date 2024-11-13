@@ -62,12 +62,12 @@ func (s *Service) Create(input CustomerInput) (*payarc.Customer, error) {
 		return nil, fmt.Errorf("create customer failed: %s OR %s", errMsg.Message, errMsg.Error)
 	}
 
-	var customer CustomerResponse
+	var customer payarc.CustomerResponse
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
 	}
 
-	return &customer.Customer, err
+	return &customer.Data, err
 }
 
 func (s *Service) CreateCard(id string, input TokenInput) (*payarc.Customer, *payarc.Card, error) {
@@ -117,12 +117,12 @@ func (s *Service) CreateCard(id string, input TokenInput) (*payarc.Customer, *pa
 		return nil, nil, fmt.Errorf("create card failed: %s", errMsg.Message)
 	}
 
-	var customer CustomerResponse
+	var customer payarc.CustomerResponse
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, nil, err
 	}
 
-	return &customer.Customer, &token.Card.Data, nil
+	return &customer.Data, &token.Card.Data, nil
 }
 
 func (s *Service) createToken(input TokenInput) (*Token, error) {

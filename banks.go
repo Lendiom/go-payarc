@@ -38,8 +38,8 @@ type BankAccountCreated struct {
 }
 
 type BankAccountResponse struct {
-	BankAccount BankAccount `json:"data"`
-	Meta        Metadata    `json:"meta"`
+	Data BankAccount `json:"data"`
+	Meta Metadata    `json:"meta"`
 }
 
 type BankAccountCreatedResponse struct {

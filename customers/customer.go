@@ -8,10 +8,6 @@ type CustomersResponse struct {
 	Customers []payarc.Customer `json:"data"`
 }
 
-type CustomerResponse struct {
-	Customer payarc.Customer `json:"data"`
-}
-
 type CustomerInput struct {
 	Name             *string `form:"name,omitempty"`
 	Email            *string `form:"email,omitempty"`

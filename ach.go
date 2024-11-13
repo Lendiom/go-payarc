@@ -18,21 +18,27 @@ var (
 )
 
 type ACHCharge struct {
-	Object              string              `json:"object"`
-	ID                  string              `json:"id"`
-	Amount              int                 `json:"amount"`
-	Status              ACHChargeStatus     `json:"status"`
-	Type                ACHFlowType         `json:"type"`
-	AuthorizationID     string              `json:"authorization_id"`
-	ValidationCode      string              `json:"validation_code"`
-	Successful          Boolean             `json:"successful"`
-	ResponseMessage     string              `json:"response_message"`
-	SecCode             string              `json:"sec_code"`
-	CreatedBy           string              `json:"created_by"`
-	CreatedAt           time.Time           `json:"created_at"`
-	UpdatedAt           time.Time           `json:"updated_at"`
-	RetriedACHChargeID  any                 `json:"retried_achcharge_id"`
-	BankAccountResponse BankAccountResponse `json:"bank_account"`
+	Object             string      `json:"object"`
+	ID                 string      `json:"id"`
+	Type               ACHFlowType `json:"type"`
+	SecCode            string      `json:"sec_code"`
+	RetriedACHChargeID any         `json:"retried_achcharge_id,omitempty"`
+
+	Status          ACHChargeStatus `json:"status"`
+	AuthorizationID string          `json:"authorization_id"`
+	ValidationCode  string          `json:"validation_code"`
+
+	Amount          int     `json:"amount"`
+	Successful      Boolean `json:"successful"`
+	ResponseMessage string  `json:"response_message"`
+
+	CreatedBy string    `json:"created_by"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+
+	BankAccount BankAccountResponse `json:"bank_account"`
+
+	Customer *CustomerResponse `json:"customer,omitempty"`
 }
 
 type ACHChargesResponse struct {
