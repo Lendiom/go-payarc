@@ -12,7 +12,7 @@ func NewDepositService(apiKey string, environment client.PayArcEnvironment) (*Se
 		return nil, err
 	}
 
-	client.Url.Path = "v1/" //Sadly, PayArc does not have a dedicated endpoint, as we use several for deposits
+	client.Url.Path = "v1" //Sadly, PayArc does not have a dedicated endpoint, as we use several for deposits
 
 	return &Service{
 		client: client,
