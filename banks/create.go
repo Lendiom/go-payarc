@@ -69,3 +69,21 @@ func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccountCreat
 
 	return &res.BankAccount, nil
 }
+
+func (s *Service) Delete(bankID string) error {
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/%s", s.client.Url.String(), bankID), nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", s.client.ApiKey))
+	req.Header.Add("Accept", "application/json")
+
+	res, err := s.client.HttpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	return nil
+}
