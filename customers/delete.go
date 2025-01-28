@@ -3,13 +3,10 @@ package customers
 import (
 	"fmt"
 	"net/http"
-	"path"
 )
 
 func (s *Service) Delete(id string) error {
-	s.client.Url.Path = path.Join(s.client.Url.Path, id)
-
-	req, err := http.NewRequest("DELETE", s.client.Url.String(), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
 	if err != nil {
 		return err
 	}
@@ -27,9 +24,7 @@ func (s *Service) Delete(id string) error {
 }
 
 func (s *Service) DeleteCard(customerID, cardID string) error {
-	s.client.Url.Path = path.Join(s.client.Url.Path, customerID, "cards", cardID)
-
-	req, err := http.NewRequest("DELETE", s.client.Url.String(), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s/cards/%s", s.client.Url.String(), customerID, cardID), nil)
 	if err != nil {
 		return err
 	}

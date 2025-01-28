@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"path"
 	"strings"
 
 	"github.com/Lendiom/go-payarc"
@@ -17,8 +16,7 @@ func (s *Service) Update(id string, input CustomerInput) (*payarc.Customer, erro
 		return nil, err
 	}
 
-	s.client.Url.Path = path.Join(s.client.Url.Path, id)
-	req, err := http.NewRequest(http.MethodPatch, s.client.Url.String(), strings.NewReader(data.Encode()))
+	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/%s", s.client.Url.String(), id), strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, err
 	}
@@ -42,10 +40,8 @@ func (s *Service) Update(id string, input CustomerInput) (*payarc.Customer, erro
 }
 
 func (s *Service) UpdateDefaultCard(customerID, defaultCardID string) error {
-	s.client.Url.Path = path.Join(s.client.Url.Path, customerID)
-
 	payload := strings.NewReader(fmt.Sprintf("default_card_id=%s", defaultCardID))
-	req, err := http.NewRequest(http.MethodPatch, s.client.Url.String(), payload)
+	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/%s", s.client.Url.String(), customerID), payload)
 	if err != nil {
 		return err
 	}

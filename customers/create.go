@@ -8,7 +8,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"path"
 	"strings"
 
 	"github.com/Lendiom/go-payarc"
@@ -81,9 +80,7 @@ func (s *Service) CreateCard(id string, input TokenInput) (*payarc.Customer, *pa
 		return nil, nil, err
 	}
 
-	s.client.Url.Path = path.Join(s.client.Url.Path, id)
-
-	req, err := http.NewRequest(http.MethodPatch, s.client.Url.String(), strings.NewReader(data.Encode()))
+	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/%s", s.client.Url.String(), id), strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, nil, err
 	}
