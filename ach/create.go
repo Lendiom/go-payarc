@@ -26,7 +26,7 @@ func (s *Service) Create(input CreateAchChargeInput) (*ACHChargeResult, error) {
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", s.client.ApiKey))
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Content-Type", "application/json")
 
 	r, err := s.client.HttpClient.Do(req)
 	if err != nil {

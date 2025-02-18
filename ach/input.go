@@ -16,22 +16,23 @@ var (
 )
 
 type CreateAchChargeInput struct {
-	CustomerID string `form:"customer_id"` //CustomerID is required if the AccountNumber, RoutingNumber, FirstName, LastName are not provided
+	CustomerID    string `json:"customer_id,omitempty"`     //CustomerID is required if the AccountNumber, RoutingNumber, FirstName, LastName are not provided
+	BankAccountID string `json:"bank_account_id,omitempty"` //BankAccountID is required if the AccountNumber and Routing number are not provided
 
-	AccountType payarc.BankAccountType `form:"account_type"`
-	Currency    payarc.Currency        `form:"currency"` //Currency is the three letter ISO currency code. Currently on usd is allowed.
-	Amount      int64                  `form:"amount"`   //Amount is a positive integer in cents representing how much to charge.
-	Type        payarc.ACHFlowType     `form:"type"`     //Type is required
-	SecCode     AchCreateChargeSecCode `form:"sec_code"` //SecCode must be one of the following: ARC, BOC, CCD, POP, PPD, RCK, TEL, WEB
+	AccountType payarc.BankAccountType `json:"account_type"`
+	Currency    payarc.Currency        `json:"currency"` //Currency is the three letter ISO currency code. Currently on usd is allowed.
+	Amount      int64                  `json:"amount"`   //Amount is a positive integer in cents representing how much to charge.
+	Type        payarc.ACHFlowType     `json:"type"`     //Type is required
+	SecCode     AchCreateChargeSecCode `json:"sec_code"` //SecCode must be one of the following: ARC, BOC, CCD, POP, PPD, RCK, TEL, WEB
 
-	AccountNumber string `form:"account_number,omitempty"` //AccountNumber is required if the CustomerID is not provided
-	RoutingNumber string `form:"routing_number,omitempty"` //RoutingNumber is required if the CustomerID is not provided
-	FirstName     string `form:"first_name,omitempty"`     //FirstName is required if the CustomerID is not provided
-	LastName      string `form:"last_name,omitempty"`      //LastName is required if the CustomerID is not provided
-	ReceiptEmail  string `form:"receipt_email,omitempty"`  //ReceiptEmail is optional
-	ReceiptPhone  string `form:"receipt_phone,omitempty"`  //ReceiptPhone is optional
-	AddressLine1  string `form:"address_line1,omitempty"`  //AddressLine1 is optional
-	Zip           string `form:"zip,omitempty"`            //Zip is optional
+	AccountNumber string `json:"account_number,omitempty"` //AccountNumber is required if the CustomerID is not provided
+	RoutingNumber string `json:"routing_number,omitempty"` //RoutingNumber is required if the CustomerID is not provided
+	FirstName     string `json:"first_name,omitempty"`     //FirstName is required if the CustomerID is not provided
+	LastName      string `json:"last_name,omitempty"`      //LastName is required if the CustomerID is not provided
+	ReceiptEmail  string `json:"receipt_email,omitempty"`  //ReceiptEmail is optional
+	ReceiptPhone  string `json:"receipt_phone,omitempty"`  //ReceiptPhone is optional
+	AddressLine1  string `json:"address_line1,omitempty"`  //AddressLine1 is optional
+	Zip           string `json:"zip,omitempty"`            //Zip is optional
 }
 
 type CreateACHChargeResponse struct {
