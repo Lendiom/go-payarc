@@ -7,19 +7,17 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/Lendiom/go-payarc"
-	"github.com/Lendiom/go-payarc/utils"
 )
 
 func (s *Service) Create(input CreateAchChargeInput) (*ACHChargeResult, error) {
-	data, err := utils.GenerateFormPayload(input)
+	data, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, s.client.Url.String(), strings.NewReader(data.Encode()))
+	req, err := http.NewRequest(http.MethodPost, s.client.Url.String(), bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +41,7 @@ func (s *Service) Create(input CreateAchChargeInput) (*ACHChargeResult, error) {
 
 	if r.StatusCode > http.StatusIMUsed || r.StatusCode < http.StatusOK {
 		log.Println("Payload for ach charge creation is:")
-		log.Println(data.Encode())
+		log.Println(string(data))
 		log.Println("Failed to create a charge. Result is:")
 		log.Println(string(body))
 
