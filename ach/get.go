@@ -12,7 +12,7 @@ import (
 )
 
 func (s *Service) GetAll(limit, page uint) (int, []payarc.ACHCharge, error) {
-	reqUrl := fmt.Sprintf("%s?include=customer&limit=%d&page=%d", s.client.Url.String(), limit, page)
+	reqUrl := fmt.Sprintf("%s?include=customer,returns&limit=%d&page=%d", s.client.Url.String(), limit, page)
 
 	req, err := http.NewRequest(http.MethodGet, reqUrl, nil)
 	if err != nil {
@@ -37,7 +37,7 @@ func (s *Service) GetAll(limit, page uint) (int, []payarc.ACHCharge, error) {
 }
 
 func (s *Service) GetByID(id string) (*payarc.ACHCharge, error) {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s?include=returns", s.client.Url.String(), id), nil)
 	if err != nil {
 		return nil, err
 	}

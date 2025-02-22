@@ -37,8 +37,20 @@ type ACHCharge struct {
 	UpdatedAt time.Time `json:"updated_at"`
 
 	BankAccount BankAccountResponse `json:"bank_account"`
+	Returns     ACHChargeReturns    `json:"returns"`
 
 	Customer *CustomerResponse `json:"customer,omitempty"`
+}
+
+type ACHChargeReturns struct {
+	Data []ACHChargeReturn `json:"data"`
+}
+
+type ACHChargeReturn struct {
+	Object      string `json:"object"`
+	ID          string `json:"id"`
+	ReturnCode  string `json:"return_code"`
+	Description string `json:"description"`
 }
 
 type ACHChargesResponse struct {
