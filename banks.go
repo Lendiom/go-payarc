@@ -18,11 +18,13 @@ type BankAccount struct {
 	ID          string          `json:"id"`
 	FirstName   string          `json:"first_name"`
 	LastName    string          `json:"last_name"`
+	CompanyName string          `json:"company_name,omitempty"`
 	AccountType BankAccountType `json:"account_type"`
 	SecCode     string          `json:"sec_code"`
 
-	RoutingNumber string `json:"routing_number"`
-	AccountNumber string `json:"account_number"`
+	RoutingNumber string  `json:"routing_number"`
+	AccountNumber string  `json:"account_number"`
+	Default       Boolean `json:"is_default"`
 }
 
 type BankAccountCreated struct {

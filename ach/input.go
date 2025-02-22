@@ -43,16 +43,17 @@ type CreateACHChargeResponse struct {
 type ACHChargeResult struct {
 	Object             string                     `json:"object"`
 	ID                 string                     `json:"id"`
-	Amount             string                     `json:"amount"`
+	Amount             int64                      `json:"amount"`
 	CreatedBy          string                     `json:"created_by"`
 	Status             string                     `json:"status"`
 	Type               payarc.ACHFlowType         `json:"type"`
-	AuthorizationID    int                        `json:"authorization_id"`
-	ValidationCode     any                        `json:"validation_code"`
+	AuthorizationID    int64                      `json:"authorization_id"`
+	ValidationCode     int64                      `json:"validation_code"`
 	Successful         bool                       `json:"successful"`
 	ResponseMessage    string                     `json:"response_message"`
 	CreatedAt          time.Time                  `json:"created_at"`
 	UpdatedAt          time.Time                  `json:"updated_at"`
 	RetriedAchChargeID any                        `json:"retried_achcharge_id"`
+	SecCode            AchCreateChargeSecCode     `json:"sec_code"`
 	BankAccount        payarc.BankAccountResponse `json:"bank_account"`
 }
