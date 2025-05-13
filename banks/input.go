@@ -16,6 +16,7 @@ type CreateBankAccountInput struct {
 	RoutingNumber string                   `form:"routing_number"` //RoutingNumber must be 9 characters
 	FirstName     string                   `form:"first_name"`
 	LastName      string                   `form:"last_name"`
+	CompanyName   string                   `form:"company_name,omitempty"`
 	AccountType   payarc.BankAccountType   `form:"account_type"`
 	SecCode       BankAccountCreateSecCode `form:"sec_code"` //SecCode must be one of the following: ARC, BOC, CCD, POP, PPD, RCK, TEL, WEB
 	CustomerID    string                   `form:"customer_id"`

@@ -10,9 +10,13 @@ var (
 	WebhookEventTypeCustomerCreated WebhookEventType = "Customers Created"
 	WebhookEventTypeCustomerUpdated WebhookEventType = "Customers Updated"
 	WebhookEventTypeCustomerDeleted WebhookEventType = "Customers Deleted"
+	WebhookEventTypeTokenCreated    WebhookEventType = "Token Created"
 	WebhookEventTypeCardCreated     WebhookEventType = "Card Created"
 	WebhookEventTypeCardUpdated     WebhookEventType = "Card Updated"
 	WebhookEventTypeCardDeleted     WebhookEventType = "Card Deleted"
+	WebhookEventTypeDisputeCreated  WebhookEventType = "Dispute Created"
+	WebhookEventTypeDisputeUpdated  WebhookEventType = "Dispute Updated"
+	WebhookEventTypeDisputeWon      WebhookEventType = "Dispute Won"
 )
 
 type WebhookEvent struct {
