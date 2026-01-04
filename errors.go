@@ -17,6 +17,7 @@ var (
 	ErrInvalidData                   = errors.New("invalid data")
 	ErrWithdrawalLimitExceeded       = errors.New("withdrawal limit exceeded")
 	ErrCustomerRequestedStopPayments = errors.New("customer requested stop payments for this seller")
+	ErrClosedAccount                 = errors.New("account is closed")
 )
 
 type RequestErrorErrors map[string][]string

@@ -73,6 +73,8 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 			return nil, payarc.ErrExpiredCard
 		case "general cardauth decline":
 			return nil, payarc.ErrGeneralCardAuthDecline
+		case "closed account":
+			return nil, payarc.ErrClosedAccount
 		}
 
 		return nil, fmt.Errorf("create charge failed: %s", errMsg.Message)
