@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/Lendiom/go-payarc"
@@ -57,17 +57,31 @@ func (s *Service) GetByID(id string) (*payarc.ACHCharge, error) {
 			return nil, err
 		}
 
-		log.Println("Failed to get a charge. Result is:")
-		log.Println(string(body))
-
 		r.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
+			slog.Error("payarc ach charge get failed; response body did not parse",
+				slog.String("component", "go-payarc"),
+				slog.String("op", "ach.get_by_id"),
+				slog.String("charge_id", id),
+				slog.Int("status_code", r.StatusCode),
+				slog.String("body", string(body)),
+				slog.Any("error", err),
+			)
 			return nil, err
 		}
 
-		log.Printf("Failed to get the charge: %+v", errMsg)
+		slog.Error("payarc ach charge get failed",
+			slog.String("component", "go-payarc"),
+			slog.String("op", "ach.get_by_id"),
+			slog.String("charge_id", id),
+			slog.Int("status_code", r.StatusCode),
+			slog.String("body", string(body)),
+			slog.String("payarc_message", errMsg.Message),
+			slog.String("payarc_error", errMsg.Error),
+			slog.Any("payarc_field_errors", errMsg.Errors),
+		)
 
 		if errMsg.Error != "" {
 			return nil, fmt.Errorf("failed to get the charge: %s", errMsg.Error)

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -42,15 +42,28 @@ func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccountCreat
 	r.Body = io.NopCloser(bytes.NewReader(body))
 
 	if r.StatusCode > http.StatusIMUsed || r.StatusCode < http.StatusOK {
-		log.Println("Failed to create a bank account. Result is:")
-		log.Println(string(body))
-
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
+			slog.Error("payarc bank account create failed; response body did not parse",
+				slog.String("component", "go-payarc"),
+				slog.String("op", "banks.create"),
+				slog.Int("status_code", r.StatusCode),
+				slog.String("body", string(body)),
+				slog.Any("error", err),
+			)
 			return nil, err
 		}
 
-		log.Printf("Failed to create the bank account: %+v", errMsg)
+		slog.Error("payarc bank account create failed",
+			slog.String("component", "go-payarc"),
+			slog.String("op", "banks.create"),
+			slog.Int("status_code", r.StatusCode),
+			slog.String("body", string(body)),
+			slog.String("payarc_message", errMsg.Message),
+			slog.String("payarc_error", errMsg.Error),
+			slog.Any("payarc_field_errors", errMsg.Errors),
+		)
+
 		msg := errMsg.Message
 		if errMsg.Error != "" {
 			msg = errMsg.Error
@@ -61,8 +74,12 @@ func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccountCreat
 
 	var res payarc.BankAccountCreatedResponse
 	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
-		log.Println("Failed to decode the bank account create response:", err.Error())
-		log.Println(string(body))
+		slog.Error("payarc bank account create succeeded; response body did not parse",
+			slog.String("component", "go-payarc"),
+			slog.String("op", "banks.create"),
+			slog.String("body", string(body)),
+			slog.Any("error", err),
+		)
 
 		return nil, err
 	}

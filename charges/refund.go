@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -48,17 +48,31 @@ func (s *Service) Void(chargeID string, input VoidInput) (*payarc.Charge, error)
 			return nil, err
 		}
 
-		log.Println("Failed to void a charge. Result is:")
-		log.Println(string(body))
-
 		r.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
+			slog.Error("payarc charge void failed; response body did not parse",
+				slog.String("component", "go-payarc"),
+				slog.String("op", "charges.void"),
+				slog.String("charge_id", chargeID),
+				slog.Int("status_code", r.StatusCode),
+				slog.String("body", string(body)),
+				slog.Any("error", err),
+			)
 			return nil, err
 		}
 
-		log.Printf("Failed to void the charge: %+v", errMsg)
+		slog.Error("payarc charge void failed",
+			slog.String("component", "go-payarc"),
+			slog.String("op", "charges.void"),
+			slog.String("charge_id", chargeID),
+			slog.Int("status_code", r.StatusCode),
+			slog.String("body", string(body)),
+			slog.String("payarc_message", errMsg.Message),
+			slog.String("payarc_error", errMsg.Error),
+			slog.Any("payarc_field_errors", errMsg.Errors),
+		)
 
 		return nil, fmt.Errorf("void charge failed: %s", errMsg.Message)
 	}
@@ -109,17 +123,31 @@ func (s *Service) Refund(chargeID string, input RefundInput) (*payarc.Refund, er
 			return nil, err
 		}
 
-		log.Println("Failed to create a refund. Result is:")
-		log.Println(string(body))
-
 		r.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
+			slog.Error("payarc charge refund failed; response body did not parse",
+				slog.String("component", "go-payarc"),
+				slog.String("op", "charges.refund"),
+				slog.String("charge_id", chargeID),
+				slog.Int("status_code", r.StatusCode),
+				slog.String("body", string(body)),
+				slog.Any("error", err),
+			)
 			return nil, err
 		}
 
-		log.Printf("Failed to refund the charge: %+v", errMsg)
+		slog.Error("payarc charge refund failed",
+			slog.String("component", "go-payarc"),
+			slog.String("op", "charges.refund"),
+			slog.String("charge_id", chargeID),
+			slog.Int("status_code", r.StatusCode),
+			slog.String("body", string(body)),
+			slog.String("payarc_message", errMsg.Message),
+			slog.String("payarc_error", errMsg.Error),
+			slog.Any("payarc_field_errors", errMsg.Errors),
+		)
 
 		return nil, fmt.Errorf("refund charge failed: %s", errMsg.Message)
 	}
