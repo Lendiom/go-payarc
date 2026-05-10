@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -40,17 +40,29 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 			return nil, err
 		}
 
-		log.Println("Failed to create a charge. Result is:")
-		log.Println(string(body))
-
 		r.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
+			slog.Error("payarc charge create failed; response body did not parse",
+				slog.String("component", "go-payarc"),
+				slog.String("op", "charges.create"),
+				slog.Int("status_code", r.StatusCode),
+				slog.String("body", string(body)),
+				slog.Any("error", err),
+			)
 			return nil, err
 		}
 
-		log.Printf("Failed to create the charge: %+v", errMsg)
+		slog.Error("payarc charge create failed",
+			slog.String("component", "go-payarc"),
+			slog.String("op", "charges.create"),
+			slog.Int("status_code", r.StatusCode),
+			slog.String("body", string(body)),
+			slog.String("payarc_message", errMsg.Message),
+			slog.String("payarc_error", errMsg.Error),
+			slog.Any("payarc_field_errors", errMsg.Errors),
+		)
 
 		switch strings.ToLower(errMsg.Message) {
 		case "invalid card":

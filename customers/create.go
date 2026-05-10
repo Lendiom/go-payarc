@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -48,15 +48,29 @@ func (s *Service) Create(input CustomerInput) (*payarc.Customer, error) {
 			return nil, err
 		}
 
-		log.Println("Failed to create a customer. Result is:")
-		log.Println(string(body))
-
 		res.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
+			slog.Error("payarc customer create failed; response body did not parse",
+				slog.String("component", "go-payarc"),
+				slog.String("op", "customers.create"),
+				slog.Int("status_code", res.StatusCode),
+				slog.String("body", string(body)),
+				slog.Any("error", err),
+			)
 			return nil, err
 		}
+
+		slog.Error("payarc customer create failed",
+			slog.String("component", "go-payarc"),
+			slog.String("op", "customers.create"),
+			slog.Int("status_code", res.StatusCode),
+			slog.String("body", string(body)),
+			slog.String("payarc_message", errMsg.Message),
+			slog.String("payarc_error", errMsg.Error),
+			slog.Any("payarc_field_errors", errMsg.Errors),
+		)
 
 		return nil, fmt.Errorf("create customer failed: %s OR %s", errMsg.Message, errMsg.Error)
 	}
@@ -101,15 +115,31 @@ func (s *Service) CreateCard(id string, input TokenInput) (*payarc.Customer, *pa
 			return nil, nil, err
 		}
 
-		log.Println("Failed to create a card. Result is:")
-		log.Println(string(body))
-
 		res.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
+			slog.Error("payarc customer card create failed; response body did not parse",
+				slog.String("component", "go-payarc"),
+				slog.String("op", "customers.create_card"),
+				slog.String("customer_id", id),
+				slog.Int("status_code", res.StatusCode),
+				slog.String("body", string(body)),
+				slog.Any("error", err),
+			)
 			return nil, nil, err
 		}
+
+		slog.Error("payarc customer card create failed",
+			slog.String("component", "go-payarc"),
+			slog.String("op", "customers.create_card"),
+			slog.String("customer_id", id),
+			slog.Int("status_code", res.StatusCode),
+			slog.String("body", string(body)),
+			slog.String("payarc_message", errMsg.Message),
+			slog.String("payarc_error", errMsg.Error),
+			slog.Any("payarc_field_errors", errMsg.Errors),
+		)
 
 		return nil, nil, fmt.Errorf("create card failed: %s", errMsg.Message)
 	}
@@ -168,15 +198,29 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 			return nil, err
 		}
 
-		log.Println("Failed to create a token. Result is:")
-		log.Println(string(body))
-
 		res.Body = io.NopCloser(bytes.NewReader(body))
 
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(res.Body).Decode(&errMsg); err != nil {
+			slog.Error("payarc token create failed; response body did not parse",
+				slog.String("component", "go-payarc"),
+				slog.String("op", "customers.create_token"),
+				slog.Int("status_code", res.StatusCode),
+				slog.String("body", string(body)),
+				slog.Any("error", err),
+			)
 			return nil, err
 		}
+
+		slog.Error("payarc token create failed",
+			slog.String("component", "go-payarc"),
+			slog.String("op", "customers.create_token"),
+			slog.Int("status_code", res.StatusCode),
+			slog.String("body", string(body)),
+			slog.String("payarc_message", errMsg.Message),
+			slog.String("payarc_error", errMsg.Error),
+			slog.Any("payarc_field_errors", errMsg.Errors),
+		)
 
 		switch strings.ToLower(errMsg.Message) {
 		case "invalid card":

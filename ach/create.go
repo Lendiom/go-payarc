@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/Lendiom/go-payarc"
@@ -40,17 +40,29 @@ func (s *Service) Create(input CreateAchChargeInput) (*ACHChargeResult, error) {
 	r.Body = io.NopCloser(bytes.NewReader(body))
 
 	if r.StatusCode > http.StatusIMUsed || r.StatusCode < http.StatusOK {
-		log.Println("Payload for ach charge creation is:")
-		log.Println(string(data))
-		log.Println("Failed to create a charge. Result is:")
-		log.Println(string(body))
-
 		var errMsg payarc.RequestError
 		if err := json.NewDecoder(r.Body).Decode(&errMsg); err != nil {
+			slog.Error("payarc ach charge create failed; response body did not parse",
+				slog.String("component", "go-payarc"),
+				slog.String("op", "ach.create"),
+				slog.Int("status_code", r.StatusCode),
+				slog.String("payload", string(data)),
+				slog.String("body", string(body)),
+				slog.Any("error", err),
+			)
 			return nil, err
 		}
 
-		log.Printf("Failed to create the charge: %+v", errMsg)
+		slog.Error("payarc ach charge create failed",
+			slog.String("component", "go-payarc"),
+			slog.String("op", "ach.create"),
+			slog.Int("status_code", r.StatusCode),
+			slog.String("payload", string(data)),
+			slog.String("body", string(body)),
+			slog.String("payarc_message", errMsg.Message),
+			slog.String("payarc_error", errMsg.Error),
+			slog.Any("payarc_field_errors", errMsg.Errors),
+		)
 
 		switch errMsg.Message {
 		case "Unauthorized SEC type":
@@ -62,8 +74,12 @@ func (s *Service) Create(input CreateAchChargeInput) (*ACHChargeResult, error) {
 
 	var res CreateACHChargeResponse
 	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
-		log.Println("failed to decode response body. the response was:")
-		log.Println(string(body))
+		slog.Error("payarc ach charge create succeeded; response body did not parse",
+			slog.String("component", "go-payarc"),
+			slog.String("op", "ach.create"),
+			slog.String("body", string(body)),
+			slog.Any("error", err),
+		)
 
 		return nil, err
 	}
