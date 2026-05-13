@@ -29,6 +29,7 @@ type CreateAchChargeInput struct {
 	RoutingNumber string `json:"routing_number,omitempty"` //RoutingNumber is required if the CustomerID is not provided
 	FirstName     string `json:"first_name,omitempty"`     //FirstName is required if the CustomerID is not provided
 	LastName      string `json:"last_name,omitempty"`      //LastName is required if the CustomerID is not provided
+	CompanyName   string `json:"company_name,omitempty"`   //CompanyName is required when AccountType is "Business Checking" or "Business Savings"
 	ReceiptEmail  string `json:"receipt_email,omitempty"`  //ReceiptEmail is optional
 	ReceiptPhone  string `json:"receipt_phone,omitempty"`  //ReceiptPhone is optional
 	AddressLine1  string `json:"address_line1,omitempty"`  //AddressLine1 is optional
