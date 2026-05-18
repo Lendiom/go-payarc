@@ -54,7 +54,13 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 			return nil, err
 		}
 
-		slog.Error("payarc charge create failed",
+		// Business declines (insufficient funds, expired card, do-not-honor,
+		// etc.) are the expected outcome of attempting a payment, not server
+		// failures — log them at WARN so they stop polluting ERROR dashboards
+		// and on-call channels. Anything we don't recognize stays at ERROR.
+		sentinel, declined := payarc.ClassifyChargeDecline(errMsg.Message)
+
+		attrs := []any{
 			slog.String("component", "go-payarc"),
 			slog.String("op", "charges.create"),
 			slog.Int("status_code", r.StatusCode),
@@ -62,32 +68,14 @@ func (s *Service) Create(input ChargeInput) (*ChargeResult, error) {
 			slog.String("payarc_message", errMsg.Message),
 			slog.String("payarc_error", errMsg.Error),
 			slog.Any("payarc_field_errors", errMsg.Errors),
-		)
-
-		switch strings.ToLower(errMsg.Message) {
-		case "invalid card":
-			return nil, payarc.ErrInvalidCard
-		case "insufficient funds":
-			return nil, payarc.ErrInsufficientFunds
-		case "suspected fraud":
-			return nil, payarc.ErrSuspectedFraud
-		case "do not honor":
-			return nil, payarc.ErrDoNotHonor
-		case "suspected card":
-			return nil, payarc.ErrSuspectedCard
-		case "invalid from account":
-			return nil, payarc.ErrInvalidFromAccount
-		case "withdrawal limit exceeded":
-			return nil, payarc.ErrWithdrawalLimitExceeded
-		case "customer requested stop of all recurring payments from specific merchant":
-			return nil, payarc.ErrCustomerRequestedStopPayments
-		case "expired card":
-			return nil, payarc.ErrExpiredCard
-		case "general cardauth decline":
-			return nil, payarc.ErrGeneralCardAuthDecline
-		case "closed account":
-			return nil, payarc.ErrClosedAccount
 		}
+
+		if declined {
+			slog.Warn("payarc declined charge", attrs...)
+			return nil, sentinel
+		}
+
+		slog.Error("payarc charge create failed", attrs...)
 
 		return nil, fmt.Errorf("create charge failed: %s", errMsg.Message)
 	}
