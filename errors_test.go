@@ -61,6 +61,18 @@ func TestClassifyChargeDecline(t *testing.T) {
 			wantMatched: true,
 		},
 		{
+			name:        "Refer to Issuer (canonical casing)",
+			message:     "Refer to Issuer",
+			wantErr:     ErrReferToIssuer,
+			wantMatched: true,
+		},
+		{
+			name:        "refer to issuer (lowercase) still matches",
+			message:     "refer to issuer",
+			wantErr:     ErrReferToIssuer,
+			wantMatched: true,
+		},
+		{
 			name:        "Unknown message does not match (must stay at ERROR)",
 			message:     "Some new failure mode PayArc invented",
 			wantErr:     nil,
