@@ -21,6 +21,7 @@ var (
 	ErrWithdrawalLimitExceeded       = errors.New("withdrawal limit exceeded")
 	ErrCustomerRequestedStopPayments = errors.New("customer requested stop payments for this seller")
 	ErrClosedAccount                 = errors.New("account is closed")
+	ErrReferToIssuer                 = errors.New("issuing bank declined and asked the cardholder to contact them")
 )
 
 type RequestErrorErrors map[string][]string
@@ -66,6 +67,15 @@ func ClassifyChargeDecline(message string) (error, bool) {
 		return ErrGeneralCardAuthDecline, true
 	case "closed account":
 		return ErrClosedAccount, true
+	case "refer to issuer":
+		// Standard ISO 8583 decline surfaced by PayArc from host response
+		// codes like D2001 ("Refer to card issuers special conditions").
+		// The issuing bank declined and wants the cardholder to contact
+		// them — there is nothing the merchant or processor can do to make
+		// the charge succeed. Functionally close to ErrDoNotHonor but a
+		// distinct host code, so keep it as its own sentinel so callers
+		// can surface a tailored "contact your card issuer" message.
+		return ErrReferToIssuer, true
 	}
 
 	return nil, false
