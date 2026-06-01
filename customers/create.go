@@ -212,7 +212,14 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 			return nil, err
 		}
 
-		slog.Error("payarc token create failed",
+		// Business declines (do-not-honor, CVV2 failure, suspected fraud,
+		// etc.) are the expected outcome of attempting to tokenize a card,
+		// not server failures — log them at WARN so they stop polluting
+		// ERROR dashboards and on-call channels. Mirrors the WARN/ERROR
+		// split already in place for charges/create.go.
+		sentinel, declined := payarc.ClassifyCardTokenDecline(errMsg.Message)
+
+		attrs := []any{
 			slog.String("component", "go-payarc"),
 			slog.String("op", "customers.create_token"),
 			slog.Int("status_code", res.StatusCode),
@@ -220,23 +227,20 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 			slog.String("payarc_message", errMsg.Message),
 			slog.String("payarc_error", errMsg.Error),
 			slog.Any("payarc_field_errors", errMsg.Errors),
-		)
+		}
 
-		switch strings.ToLower(errMsg.Message) {
-		case "invalid card":
-			return nil, payarc.ErrInvalidCard
-		case "invalid cvv":
-			return nil, payarc.ErrInvalidCCV
-		case "cvv2 verification failed":
-			return nil, payarc.ErrCVV2Failed
-		case "suspected fraud":
-			return nil, payarc.ErrSuspectedFraud
-		case "do not honor":
-			return nil, payarc.ErrDoNotHonor
-		case "suspected card":
-			return nil, payarc.ErrSuspectedCard
-		case "the given data was invalid.":
-			// This error usually has more details in the "errors" field
+		if declined {
+			slog.Warn("payarc declined card token", attrs...)
+			return nil, sentinel
+		}
+
+		slog.Error("payarc token create failed", attrs...)
+
+		// "The given data was invalid." is a PayArc validation error (not a
+		// decline) — the cardholder name typically failed format checks.
+		// Surface the specific per-field message so callers can show the
+		// user what to fix.
+		if strings.EqualFold(errMsg.Message, "the given data was invalid.") {
 			if cardHolderNameErrors, ok := errMsg.Errors["card_holder_name"]; ok && len(cardHolderNameErrors) > 0 {
 				return nil, errors.New(cardHolderNameErrors[0])
 			}

@@ -80,3 +80,41 @@ func ClassifyChargeDecline(message string) (error, bool) {
 
 	return nil, false
 }
+
+// ClassifyCardTokenDecline maps a known PayArc card-tokenization decline
+// message to its sentinel error. It returns (sentinel, true) when PayArc
+// rejected the card at tokenization for a reason the cardholder/bank owns
+// (invalid card, CVV2 failure, do-not-honor, suspected fraud, etc.) and
+// (nil, false) otherwise.
+//
+// Mirrors ClassifyChargeDecline but for the token-create code path: the set
+// of messages PayArc returns during tokenization overlaps with — but is not
+// identical to — the charge-decline set. CVV/CVV2 issues, for example, only
+// show up at token time, while "insufficient funds" only shows up at charge
+// time. Keeping them as separate classifiers keeps the WARN/ERROR decision
+// honest at each call site.
+//
+// Callers use the boolean to decide log level: known declines are expected
+// outcomes of adding a card and should be logged at WARN, while unknown
+// messages, parse failures, and server-side errors should keep ERROR-level
+// logging so they still surface in alerting dashboards.
+//
+// Matching is case-insensitive against the PayArc `message` field.
+func ClassifyCardTokenDecline(message string) (error, bool) {
+	switch strings.ToLower(message) {
+	case "invalid card":
+		return ErrInvalidCard, true
+	case "invalid cvv":
+		return ErrInvalidCCV, true
+	case "cvv2 verification failed":
+		return ErrCVV2Failed, true
+	case "suspected fraud":
+		return ErrSuspectedFraud, true
+	case "do not honor":
+		return ErrDoNotHonor, true
+	case "suspected card":
+		return ErrSuspectedCard, true
+	}
+
+	return nil, false
+}
