@@ -22,6 +22,13 @@ var (
 	ErrCustomerRequestedStopPayments = errors.New("customer requested stop payments for this seller")
 	ErrClosedAccount                 = errors.New("account is closed")
 	ErrReferToIssuer                 = errors.New("issuing bank declined and asked the cardholder to contact them")
+	// ErrReEnterTransaction is ISO 8583 host response code 19 (PayArc failure
+	// code D0092 — "Re-enter transaction"). The card network reported a
+	// transient processor/network glitch — the charge did NOT post, the card
+	// itself is fine, and a retry typically succeeds. Distinct sentinel so
+	// callers can surface a "try again" message and avoid disabling the
+	// payment method or auto-draft for what is effectively a network hiccup.
+	ErrReEnterTransaction = errors.New("payarc asked us to re-enter the transaction")
 )
 
 type RequestErrorErrors map[string][]string
@@ -76,6 +83,14 @@ func ClassifyChargeDecline(message string) (error, bool) {
 		// distinct host code, so keep it as its own sentinel so callers
 		// can surface a tailored "contact your card issuer" message.
 		return ErrReferToIssuer, true
+	case "re-enter transaction":
+		// ISO 8583 host response code 19 (PayArc failure code D0092). A
+		// transient processor/network glitch — the charge did NOT post,
+		// the card itself is not at fault, and a retry typically succeeds.
+		// Not strictly a "bank decline," but it IS an expected outcome of
+		// attempting a payment (not a server bug), so it belongs at WARN
+		// alongside the other declines rather than paging on-call.
+		return ErrReEnterTransaction, true
 	}
 
 	return nil, false

@@ -73,6 +73,24 @@ func TestClassifyChargeDecline(t *testing.T) {
 			wantMatched: true,
 		},
 		{
+			name:        "Re-enter transaction (canonical casing)",
+			message:     "Re-enter transaction",
+			wantErr:     ErrReEnterTransaction,
+			wantMatched: true,
+		},
+		{
+			name:        "re-enter transaction (lowercase) still matches",
+			message:     "re-enter transaction",
+			wantErr:     ErrReEnterTransaction,
+			wantMatched: true,
+		},
+		{
+			name:        "RE-ENTER TRANSACTION (uppercase) still matches",
+			message:     "RE-ENTER TRANSACTION",
+			wantErr:     ErrReEnterTransaction,
+			wantMatched: true,
+		},
+		{
 			name:        "Unknown message does not match (must stay at ERROR)",
 			message:     "Some new failure mode PayArc invented",
 			wantErr:     nil,

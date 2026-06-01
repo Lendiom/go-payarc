@@ -87,6 +87,14 @@ func TestCreate_BusinessDeclineLogsAtWarnAndReturnsSentinel(t *testing.T) {
 			wantLogMsg: "payarc declined charge",
 		},
 		{
+			name:       "Re-enter transaction → WARN + ErrReEnterTransaction",
+			statusCode: http.StatusUnprocessableEntity,
+			body:       `{"status":"error","message":"Re-enter transaction","status_code":422,"data":{"failure_code":"D0092","host_response_code":"19"}}`,
+			wantErr:    payarc.ErrReEnterTransaction,
+			wantLogLvl: slog.LevelWarn,
+			wantLogMsg: "payarc declined charge",
+		},
+		{
 			name:       "Unknown message → ERROR (alerting path stays intact)",
 			statusCode: http.StatusInternalServerError,
 			body:       `{"status":"error","message":"Some New Failure Mode","status_code":500}`,
