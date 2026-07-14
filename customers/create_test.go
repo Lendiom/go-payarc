@@ -123,6 +123,14 @@ func TestCreateToken_BusinessDeclineLogsAtWarnAndReturnsSentinel(t *testing.T) {
 			wantLogMsg: "payarc declined card token",
 		},
 		{
+			name:       "Expired Card → WARN + ErrExpiredCard",
+			statusCode: http.StatusConflict,
+			body:       `{"message":"Expired Card"}`,
+			wantErr:    payarc.ErrExpiredCard,
+			wantLogLvl: slog.LevelWarn,
+			wantLogMsg: "payarc declined card token",
+		},
+		{
 			name:       "Validation error → ERROR (alerting path stays intact)",
 			statusCode: http.StatusUnprocessableEntity,
 			body:       `{"message":"The given data was invalid.","errors":{"card_holder_name":["The card holder name format is invalid."]}}`,
@@ -173,7 +181,8 @@ func TestCreateToken_BusinessDeclineLogsAtWarnAndReturnsSentinel(t *testing.T) {
 					errors.Is(tt.wantErr, payarc.ErrCVV2Failed) ||
 					errors.Is(tt.wantErr, payarc.ErrSuspectedFraud) ||
 					errors.Is(tt.wantErr, payarc.ErrDoNotHonor) ||
-					errors.Is(tt.wantErr, payarc.ErrSuspectedCard) {
+					errors.Is(tt.wantErr, payarc.ErrSuspectedCard) ||
+					errors.Is(tt.wantErr, payarc.ErrExpiredCard) {
 					if !errors.Is(err, tt.wantErr) {
 						t.Errorf("err = %v, want sentinel %v", err, tt.wantErr)
 					}
