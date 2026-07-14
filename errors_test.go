@@ -169,6 +169,18 @@ func TestClassifyCardTokenDecline(t *testing.T) {
 			wantMatched: true,
 		},
 		{
+			name:        "Expired Card (canonical casing)",
+			message:     "Expired Card",
+			wantErr:     ErrExpiredCard,
+			wantMatched: true,
+		},
+		{
+			name:        "expired card (lowercase) still matches",
+			message:     "expired card",
+			wantErr:     ErrExpiredCard,
+			wantMatched: true,
+		},
+		{
 			name:        "Charge-only message does not match (Insufficient Funds is not a token decline)",
 			message:     "Insufficient Funds",
 			wantErr:     nil,

@@ -129,6 +129,14 @@ func ClassifyCardTokenDecline(message string) (error, bool) {
 		return ErrDoNotHonor, true
 	case "suspected card":
 		return ErrSuspectedCard, true
+	case "expired card":
+		// PayArc returns "Expired Card" (HTTP 409) from the token-create
+		// endpoint when callers pass AuthorizeCard=true and the $0 auth is
+		// declined because the card's expiration date has passed. It's a
+		// cardholder-owned condition — the customer needs to use a
+		// different card — not a server bug, so it belongs at WARN
+		// alongside the other known token declines.
+		return ErrExpiredCard, true
 	}
 
 	return nil, false
