@@ -234,12 +234,30 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 			return nil, sentinel
 		}
 
+		// "The given data was invalid." with a card_holder_name error is a
+		// customer-data problem — PayArc's Laravel-style format check rejects
+		// digits and characters outside its accepted set for the cardholder
+		// name. That is not a server bug: the customer typed something the
+		// processor won't accept, and the caller can surface a "fix your
+		// name" message. Log at WARN so this expected outcome stops paging
+		// on-call, but keep ERROR (below) for the same "The given data was
+		// invalid." shape combined with other/additional fields, since those
+		// usually mean the caller sent a malformed request payload (missing
+		// card_number, wrong type, etc.) that a human should investigate.
+		if strings.EqualFold(errMsg.Message, "the given data was invalid.") &&
+			len(errMsg.Errors) == 1 &&
+			len(errMsg.Errors["card_holder_name"]) > 0 {
+			slog.Warn("payarc rejected card_holder_name format", attrs...)
+			return nil, errors.New(errMsg.Errors["card_holder_name"][0])
+		}
+
 		slog.Error("payarc token create failed", attrs...)
 
-		// "The given data was invalid." is a PayArc validation error (not a
-		// decline) — the cardholder name typically failed format checks.
-		// Surface the specific per-field message so callers can show the
-		// user what to fix.
+		// Other "The given data was invalid." shapes (multiple fields, or a
+		// non-card_holder_name field) still surface the per-field message so
+		// the caller has something actionable to show, but the ERROR log
+		// above keeps alerting on-call because it likely means our request
+		// payload is broken.
 		if strings.EqualFold(errMsg.Message, "the given data was invalid.") {
 			if cardHolderNameErrors, ok := errMsg.Errors["card_holder_name"]; ok && len(cardHolderNameErrors) > 0 {
 				return nil, errors.New(cardHolderNameErrors[0])
