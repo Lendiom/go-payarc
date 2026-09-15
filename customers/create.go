@@ -84,6 +84,10 @@ func (s *Service) Create(input CustomerInput) (*payarc.Customer, error) {
 }
 
 func (s *Service) CreateCard(id string, input TokenInput) (*payarc.Customer, *payarc.Card, error) {
+	if err := payarc.RequireParam("customer id", id); err != nil {
+		return nil, nil, err
+	}
+
 	token, err := s.createToken(input)
 	if err != nil {
 		return nil, nil, err

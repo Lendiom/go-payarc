@@ -19,6 +19,10 @@ type VoidInput struct {
 }
 
 func (s *Service) Void(chargeID string, input VoidInput) (*payarc.Charge, error) {
+	if err := payarc.RequireParam("charge id", chargeID); err != nil {
+		return nil, err
+	}
+
 	data, err := utils.GenerateFormPayload(input)
 	if err != nil {
 		return nil, err
@@ -94,6 +98,10 @@ type RefundInput struct {
 }
 
 func (s *Service) Refund(chargeID string, input RefundInput) (*payarc.Refund, error) {
+	if err := payarc.RequireParam("charge id", chargeID); err != nil {
+		return nil, err
+	}
+
 	data, err := utils.GenerateFormPayload(input)
 	if err != nil {
 		return nil, err

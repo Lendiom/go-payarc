@@ -3,6 +3,7 @@ package banks
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -88,6 +89,10 @@ func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccountCreat
 }
 
 func (s *Service) Delete(bankID string) error {
+	if err := payarc.RequireParam("bank account id", bankID); err != nil {
+		return err
+	}
+
 	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/%s", s.client.Url.String(), bankID), nil)
 	if err != nil {
 		return err
@@ -101,6 +106,12 @@ func (s *Service) Delete(bankID string) error {
 		return err
 	}
 	defer res.Body.Close()
+
+	// A delete that finds nothing already has the outcome the caller wanted, so 404 is
+	// success here rather than an error that would block cleaning up our own record of it.
+	if err := payarc.CheckResponse(res, "delete bank account"); err != nil && !errors.Is(err, payarc.ErrNotFound) {
+		return err
+	}
 
 	return nil
 }
