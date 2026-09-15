@@ -27,6 +27,10 @@ func (s *Service) GetReport(month time.Month, year uint) (*payarc.DepositReport,
 	}
 	defer res.Body.Close()
 
+	if err := payarc.CheckResponse(res, "get deposit report"); err != nil {
+		return nil, err
+	}
+
 	var report payarc.DepositReport
 	if err := json.NewDecoder(res.Body).Decode(&report); err != nil {
 		return nil, err
@@ -52,6 +56,10 @@ func (s *Service) GetReportDetails(batchReferenceNumber string) (*payarc.Deposit
 		return nil, err
 	}
 	defer res.Body.Close()
+
+	if err := payarc.CheckResponse(res, "get deposit report details"); err != nil {
+		return nil, err
+	}
 
 	var result payarc.DepositBatchDetailsResponse
 	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {

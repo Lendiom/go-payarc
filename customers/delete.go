@@ -1,8 +1,11 @@
 package customers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/Lendiom/go-payarc"
 )
 
 func (s *Service) Delete(id string) error {
@@ -19,6 +22,12 @@ func (s *Service) Delete(id string) error {
 		return err
 	}
 	defer res.Body.Close()
+
+	// A delete that finds nothing already has the outcome the caller wanted, so 404 is
+	// success here rather than an error that would block cleaning up our own record of it.
+	if err := payarc.CheckResponse(res, "delete customer"); err != nil && !errors.Is(err, payarc.ErrNotFound) {
+		return err
+	}
 
 	return nil
 }
@@ -37,6 +46,12 @@ func (s *Service) DeleteCard(customerID, cardID string) error {
 		return err
 	}
 	defer res.Body.Close()
+
+	// A delete that finds nothing already has the outcome the caller wanted, so 404 is
+	// success here rather than an error that would block cleaning up our own record of it.
+	if err := payarc.CheckResponse(res, "delete card"); err != nil && !errors.Is(err, payarc.ErrNotFound) {
+		return err
+	}
 
 	return nil
 }

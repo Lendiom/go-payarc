@@ -31,12 +31,16 @@ func (s *Service) Update(id string, input CustomerInput) (*payarc.Customer, erro
 	}
 	defer res.Body.Close()
 
+	if err := payarc.CheckResponse(res, "update customer"); err != nil {
+		return nil, err
+	}
+
 	var customer payarc.CustomerResponse
 	if err := json.NewDecoder(res.Body).Decode(&customer); err != nil {
 		return nil, err
 	}
 
-	return &customer.Data, err
+	return &customer.Data, nil
 }
 
 func (s *Service) UpdateDefaultCard(customerID, defaultCardID string) error {
@@ -55,6 +59,10 @@ func (s *Service) UpdateDefaultCard(customerID, defaultCardID string) error {
 		return err
 	}
 	defer res.Body.Close()
+
+	if err := payarc.CheckResponse(res, "set the default card"); err != nil {
+		return err
+	}
 
 	return nil
 }

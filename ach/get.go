@@ -28,6 +28,10 @@ func (s *Service) GetAll(limit, page uint) (int, []payarc.ACHCharge, error) {
 	}
 	defer r.Body.Close()
 
+	if err := payarc.CheckResponse(r, "get ach charges"); err != nil {
+		return 0, nil, err
+	}
+
 	var res payarc.ACHChargesResponse
 	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
 		return 0, nil, err

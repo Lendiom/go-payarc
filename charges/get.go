@@ -25,6 +25,10 @@ func (s *Service) GetAll(limit, page uint) (int, []payarc.Charge, error) {
 	}
 	defer r.Body.Close()
 
+	if err := payarc.CheckResponse(r, "get charges"); err != nil {
+		return 0, nil, err
+	}
+
 	var res payarc.ChargesResponse
 	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
 		return 0, nil, err
@@ -50,6 +54,10 @@ func (s *Service) GetByID(id string) (*payarc.Charge, error) {
 		return nil, err
 	}
 	defer r.Body.Close()
+
+	if err := payarc.CheckResponse(r, "get charge"); err != nil {
+		return nil, err
+	}
 
 	var res payarc.ChargeResponse
 	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {

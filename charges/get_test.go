@@ -1,11 +1,13 @@
 package charges
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
 
+	"github.com/Lendiom/go-payarc"
 	"github.com/Lendiom/go-payarc/client"
 )
 
@@ -65,5 +67,39 @@ func TestGetByID_RequestsTransactionMetadata(t *testing.T) {
 
 	if loanID != "640747b60796a70001820d43" {
 		t.Errorf("metadata loanId = %q, want %q", loanID, "640747b60796a70001820d43")
+	}
+}
+
+// TestGetByID_NotFound is the regression that motivated payarc.CheckResponse. PayArc answers an
+// unknown charge id with 404 and an error body that shares no field names with the success
+// shape, so decoding it produced a zero-valued Charge and a nil error. Callers read that as a
+// real, uncaptured charge and went on to void it — with an empty id, which PayArc rejected as
+// "The route v1/charges//void could not be found."
+func TestGetByID_NotFound(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		_, _ = w.Write([]byte(`{"message":"The route v1/charges/nope could not be found."}`))
+	}))
+	defer srv.Close()
+
+	u, err := url.Parse(srv.URL)
+	if err != nil {
+		t.Fatalf("parse httptest URL: %v", err)
+	}
+
+	svc := &Service{client: client.Client{ApiKey: "test-key", HttpClient: *srv.Client(), Url: *u}}
+
+	charge, err := svc.GetByID("nope")
+	if err == nil {
+		t.Fatalf("GetByID returned nil error and charge %+v, want an error", charge)
+	}
+
+	if !errors.Is(err, payarc.ErrNotFound) {
+		t.Errorf("GetByID error = %v, want it to match payarc.ErrNotFound", err)
+	}
+
+	if charge != nil {
+		t.Errorf("GetByID returned charge %+v, want nil so a caller cannot act on a zero value", charge)
 	}
 }
