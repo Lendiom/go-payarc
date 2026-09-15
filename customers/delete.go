@@ -9,6 +9,10 @@ import (
 )
 
 func (s *Service) Delete(id string) error {
+	if err := payarc.RequireParam("customer id", id); err != nil {
+		return err
+	}
+
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
 	if err != nil {
 		return err
@@ -33,6 +37,14 @@ func (s *Service) Delete(id string) error {
 }
 
 func (s *Service) DeleteCard(customerID, cardID string) error {
+	if err := payarc.RequireParam("customer id", customerID); err != nil {
+		return err
+	}
+
+	if err := payarc.RequireParam("card id", cardID); err != nil {
+		return err
+	}
+
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s/cards/%s", s.client.Url.String(), customerID, cardID), nil)
 	if err != nil {
 		return err

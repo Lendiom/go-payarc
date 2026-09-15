@@ -38,6 +38,10 @@ func (s *Service) GetAll(limit, page uint) (int, []payarc.Charge, error) {
 }
 
 func (s *Service) GetByID(id string) (*payarc.Charge, error) {
+	if err := payarc.RequireParam("charge id", id); err != nil {
+		return nil, err
+	}
+
 	// Request transaction_metadata explicitly: it is an optional include that the
 	// detail endpoint omits by default (mirrors GetAll). Default includes such as
 	// the card relation are additive and remain present.

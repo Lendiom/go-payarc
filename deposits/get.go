@@ -40,6 +40,10 @@ func (s *Service) GetReport(month time.Month, year uint) (*payarc.DepositReport,
 }
 
 func (s *Service) GetReportDetails(batchReferenceNumber string) (*payarc.DepositBatchDetailsResponse, error) {
+	if err := payarc.RequireParam("batch reference number", batchReferenceNumber); err != nil {
+		return nil, err
+	}
+
 	//https://${ baseUrl }/v1/deposit/reports/details?reference_number=xxx
 	url := fmt.Sprintf("%s/deposit/reports/details?reference_number=%s", s.client.Url.String(), batchReferenceNumber)
 

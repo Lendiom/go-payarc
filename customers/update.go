@@ -11,6 +11,10 @@ import (
 )
 
 func (s *Service) Update(id string, input CustomerInput) (*payarc.Customer, error) {
+	if err := payarc.RequireParam("customer id", id); err != nil {
+		return nil, err
+	}
+
 	data, err := utils.GenerateFormPayload(input)
 	if err != nil {
 		return nil, err
@@ -44,6 +48,14 @@ func (s *Service) Update(id string, input CustomerInput) (*payarc.Customer, erro
 }
 
 func (s *Service) UpdateDefaultCard(customerID, defaultCardID string) error {
+	if err := payarc.RequireParam("customer id", customerID); err != nil {
+		return err
+	}
+
+	if err := payarc.RequireParam("default card id", defaultCardID); err != nil {
+		return err
+	}
+
 	payload := strings.NewReader(fmt.Sprintf("default_card_id=%s", defaultCardID))
 	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/%s", s.client.Url.String(), customerID), payload)
 	if err != nil {

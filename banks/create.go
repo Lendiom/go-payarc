@@ -89,6 +89,10 @@ func (s *Service) Create(input CreateBankAccountInput) (*payarc.BankAccountCreat
 }
 
 func (s *Service) Delete(bankID string) error {
+	if err := payarc.RequireParam("bank account id", bankID); err != nil {
+		return err
+	}
+
 	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/%s", s.client.Url.String(), bankID), nil)
 	if err != nil {
 		return err

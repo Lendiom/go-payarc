@@ -41,6 +41,10 @@ func (s *Service) GetAll(limit, page uint) (int, []payarc.ACHCharge, error) {
 }
 
 func (s *Service) GetByID(id string) (*payarc.ACHCharge, error) {
+	if err := payarc.RequireParam("ach charge id", id); err != nil {
+		return nil, err
+	}
+
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s?include=returns", s.client.Url.String(), id), nil)
 	if err != nil {
 		return nil, err

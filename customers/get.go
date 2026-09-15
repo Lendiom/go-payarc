@@ -36,6 +36,10 @@ func (s *Service) GetAll(limit, page uint) ([]payarc.Customer, error) {
 }
 
 func (s *Service) GetByID(id string) (*payarc.Customer, error) {
+	if err := payarc.RequireParam("customer id", id); err != nil {
+		return nil, err
+	}
+
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", s.client.Url.String(), id), nil)
 	if err != nil {
 		return nil, err
