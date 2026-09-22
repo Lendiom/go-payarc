@@ -248,9 +248,14 @@ func (s *Service) createToken(input TokenInput) (*Token, error) {
 		// invalid." shape combined with other/additional fields, since those
 		// usually mean the caller sent a malformed request payload (missing
 		// card_number, wrong type, etc.) that a human should investigate.
-		if strings.EqualFold(errMsg.Message, "the given data was invalid.") &&
-			len(errMsg.Errors) == 1 &&
-			len(errMsg.Errors["card_holder_name"]) > 0 {
+		//
+		// PayArc sends this under two different top-level messages: the generic
+		// "The given data was invalid." and the specific "The card holder name
+		// field format is invalid." (seen in production 2026-09-22). Both carry
+		// the same single card_holder_name field error, so key off that rather
+		// than the message — matching only the generic wording let the specific
+		// one fall through to ERROR.
+		if len(errMsg.Errors) == 1 && len(errMsg.Errors["card_holder_name"]) > 0 {
 			slog.Warn("payarc rejected card_holder_name format", attrs...)
 			return nil, errors.New(errMsg.Errors["card_holder_name"][0])
 		}
