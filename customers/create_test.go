@@ -139,6 +139,19 @@ func TestCreateToken_BusinessDeclineLogsAtWarnAndReturnsSentinel(t *testing.T) {
 			wantLogMsg: "payarc rejected card_holder_name format",
 		},
 		{
+			// The shape lendiom-api actually received on 2026-09-22: PayArc put
+			// the specific complaint in the top-level message instead of the
+			// generic "The given data was invalid.", so keying the WARN off the
+			// message let this fall through to ERROR four times for one person
+			// retrying a name.
+			name:       "card_holder_name format validation, specific top-level message → WARN + per-field message",
+			statusCode: http.StatusUnprocessableEntity,
+			body:       `{"message":"The card holder name field format is invalid.","errors":{"card_holder_name":["The card holder name field format is invalid."]}}`,
+			wantErr:    errors.New("The card holder name field format is invalid."),
+			wantLogLvl: slog.LevelWarn,
+			wantLogMsg: "payarc rejected card_holder_name format",
+		},
+		{
 			name:       "Validation error on a non-card_holder_name field → ERROR (alerting path stays intact)",
 			statusCode: http.StatusUnprocessableEntity,
 			body:       `{"message":"The given data was invalid.","errors":{"card_number":["The card number is required."]}}`,
